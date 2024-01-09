@@ -1,18 +1,47 @@
 package com.hj.home.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.hj.home.DTO.Board;
+import com.hj.home.DTO.BoardReply;
+import com.hj.home.DTO.PaginationDTO;
+import com.hj.home.service.mainService;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Controller
 @RequestMapping(value=".com")
 public class mainController {
 	private static final Logger logger = LoggerFactory.getLogger(mainController.class);
-
 	
+	private mainService mainService;
+	
+	@Autowired
+	public mainController(mainService mainService) {
+		this.mainService=mainService;
+	}
 	
 	@GetMapping(value="/main")							//메인 페이지
 	public ModelAndView setMain(ModelAndView mv) {
@@ -22,37 +51,354 @@ public class mainController {
 		
 	}
 	
-	
-	@GetMapping(value="/project")							//메인 페이지
-	public ModelAndView setProject(ModelAndView mv) {
+	public PaginationDTO calculatePagination (int page, int limit, int listCount) {	//페이징 처리
+		PaginationDTO p = new PaginationDTO();
 		
+		p.setLimit(limit);
+		p.setListCount(listCount);							//총 글의 수
+		p.setMaxPage((listCount + limit -1) / limit);		//최대 페이지 수
+		p.setStartPage(((page - 1) / 10) * 10 + 1);			//현재 페이지에 표시할 첫 페이지 수
+		p.setEndPage(p.getStartPage() + 10 - 1);			//현재 페이지에 표시할 끝 페이지 수
+		
+		if (p.getEndPage() > p.getMaxPage()) {
+			p.setEndPage(p.getMaxPage());
+		}
+		
+		return p;
+	}
+	
+	@GetMapping(value="/project")						//프로젝트 게시글 리스트
+	public ModelAndView setProject(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
+			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
+																			ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
+		
+		List<Board> projectList = mainService.getProjectList(index, search_word, page, 10);
+		
+//		for (Board board : projectList) {
+//	        int boardNum = board.getBoardNum();
+//	        int boardReplyCount = mainService.getBoardReplyCount(boardNum);
+//	        board.setBoardReplyCount(boardReplyCount);
+//	    }
+		
+		mv.addObject("page", page);
+		mv.addObject("maxpage", p.getMaxPage());		
+		mv.addObject("startpage", p.getStartPage());	
+		mv.addObject("endpage", p.getEndPage());		
+		mv.addObject("listcount", p.getListCount());
+		mv.addObject("search_field", index);
+		mv.addObject("search_word", search_word);
+		mv.addObject("projectList", projectList);				//해당 페이지의 글 목록 리스트
+		mv.addObject("limit", 10);
 		mv.setViewName("project/project");
 		return mv;
 		
 	}
 	
-	@GetMapping(value="/cs")							//메인 페이지
-	public ModelAndView setCs(ModelAndView mv) {
+	@ResponseBody
+	@RequestMapping(value="/project_ajax")
+	public Map<String, Object> projectListAjax(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
 		
+		PaginationDTO p = calculatePagination(page, limit, mainService.getProjectListCount());
+		
+		List<Board> projectList = mainService.getProjectList(page, limit);	//리스트를 받아옴
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("page", page);
+		map.put("maxpage", p.getMaxPage());
+		map.put("startpage", p.getStartPage());
+		map.put("endpage", p.getEndPage());
+		map.put("listcount", p.getListCount());
+		map.put("projectList", projectList);				//해당 페이지의 글 목록 리스트
+		map.put("limit", limit);
+		
+		return map;
+	}
+	
+	@GetMapping("/project/{num}")
+	public ModelAndView projectDetail(
+			@PathVariable("num") int num, ModelAndView mv, HttpServletRequest request,
+			@RequestHeader(value="referer", required=false) String beforeURL) {
+		
+		logger.info("referer : " + beforeURL);
+		if (beforeURL != null && beforeURL.endsWith("project")) {
+			mainService.setBoardViewUpdate(num);
+		}
+		
+		Board projectData = mainService.getBoardDetail(num);
+		if (projectData == null) {
+			logger.info("project 상세보기 실패");
+			mv.addObject("url", request.getRequestURI());
+		}else {
+			logger.info("project 상세보기 성공");
+			int count = mainService.getReplyListCount(num);
+			mv.addObject("count", count);
+			mv.addObject("projectData", projectData);
+			mv.setViewName("detailView/projectView");
+		}
+		return mv;
+	}
+	
+	@GetMapping(value="/cs")							//cs 공부
+	public ModelAndView setCs(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
+			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
+																			ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getCsListCount());
+		
+		List<Board> csList = mainService.getCsList(index, search_word, page, 10);
+		
+		mv.addObject("page", page);
+		mv.addObject("maxpage", p.getMaxPage());		
+		mv.addObject("startpage", p.getStartPage());	
+		mv.addObject("endpage", p.getEndPage());		
+		mv.addObject("listcount", p.getListCount());
+		mv.addObject("search_field", index);
+		mv.addObject("search_word", search_word);
+		mv.addObject("csList", csList);				//해당 페이지의 글 목록 리스트
+		mv.addObject("limit", 10);
 		mv.setViewName("cs/cs");
 		return mv;
 		
 	}
 	
-	@GetMapping(value="/coding")							//메인 페이지
-	public ModelAndView setCoding(ModelAndView mv) {
+	@ResponseBody
+	@RequestMapping(value="/cs_ajax")
+	public Map<String, Object> csListAjax(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
 		
+		PaginationDTO p = calculatePagination(page, limit, mainService.getCsListCount());
+		
+		List<Board> csList = mainService.getCsList(page, limit);	//리스트를 받아옴
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("page", page);
+		map.put("maxpage", p.getMaxPage());
+		map.put("startpage", p.getStartPage());
+		map.put("endpage", p.getEndPage());
+		map.put("listcount", p.getListCount());
+		map.put("csList", csList);				//해당 페이지의 글 목록 리스트
+		map.put("limit", limit);
+		
+		return map;
+	}
+	
+	@GetMapping("/cs/{num}")
+	public ModelAndView csDetail(
+			@PathVariable("num") int num, ModelAndView mv, HttpServletRequest request,
+			@RequestHeader(value="referer", required=false) String beforeURL) {
+		
+		logger.info("referer : " + beforeURL);
+		if (beforeURL != null && beforeURL.endsWith("cs")) {
+			mainService.setBoardViewUpdate(num);
+		}
+		
+		Board csData = mainService.getBoardDetail(num);
+		if (csData == null) {
+			logger.info("cs 상세보기 실패");
+			mv.addObject("url", request.getRequestURI());
+		}else {
+			logger.info("cs 상세보기 성공");
+			mv.addObject("csData", csData);
+			mv.setViewName("detailView/csView");
+		}
+		return mv;
+	}
+	
+	@GetMapping(value="/coding")						//코딩 풀이
+	public ModelAndView setCoding(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
+			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
+																			ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getCodingListCount());
+		
+		List<Board> codingList = mainService.getCodingList(index, search_word, page, 10);
+		
+		mv.addObject("page", page);
+		mv.addObject("maxpage", p.getMaxPage());		
+		mv.addObject("startpage", p.getStartPage());	
+		mv.addObject("endpage", p.getEndPage());		
+		mv.addObject("listcount", p.getListCount());
+		mv.addObject("search_field", index);
+		mv.addObject("search_word", search_word);
+		mv.addObject("codingList", codingList);				//해당 페이지의 글 목록 리스트
+		mv.addObject("limit", 10);
 		mv.setViewName("coding/coding");
 		return mv;
 		
 	}
 	
-	@GetMapping(value="/study")							//메인 페이지
-	public ModelAndView setStudy(ModelAndView mv) {
+	@ResponseBody
+	@RequestMapping(value="/coding_ajax")
+	public Map<String, Object> codingListAjax(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
 		
+		PaginationDTO p = calculatePagination(page, limit, mainService.getCodingListCount());
+		
+		List<Board> codingList = mainService.getCodingList(page, limit);	//리스트를 받아옴
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("page", page);
+		map.put("maxpage", p.getMaxPage());
+		map.put("startpage", p.getStartPage());
+		map.put("endpage", p.getEndPage());
+		map.put("listcount", p.getListCount());
+		map.put("codingList", codingList);				//해당 페이지의 글 목록 리스트
+		map.put("limit", limit);
+		
+		return map;
+	}
+	
+	@GetMapping("/coding/{num}")
+	public ModelAndView codingDetail(
+			@PathVariable("num") int num, ModelAndView mv, HttpServletRequest request,
+			@RequestHeader(value="referer", required=false) String beforeURL) {
+		
+		logger.info("referer : " + beforeURL);
+		if (beforeURL != null && beforeURL.endsWith("coding")) {
+			mainService.setBoardViewUpdate(num);
+		}
+		
+		Board codingData = mainService.getBoardDetail(num);
+		if (codingData == null) {
+			logger.info("coding 상세보기 실패");
+			mv.addObject("url", request.getRequestURI());
+		}else {
+			logger.info("coding 상세보기 성공");
+			mv.addObject("codingData", codingData);
+			mv.setViewName("detailView/codingView");
+		}
+		return mv;
+	}
+	
+	@GetMapping(value="/study")							//정처리 공부
+	public ModelAndView setStudy(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
+			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
+																			ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getStudyListCount());
+		
+		List<Board> studyList = mainService.getStudyList(index, search_word, page, 10);
+		
+		mv.addObject("page", page);
+		mv.addObject("maxpage", p.getMaxPage());		
+		mv.addObject("startpage", p.getStartPage());	
+		mv.addObject("endpage", p.getEndPage());		
+		mv.addObject("listcount", p.getListCount());
+		mv.addObject("search_field", index);
+		mv.addObject("search_word", search_word);
+		mv.addObject("studyList", studyList);				//해당 페이지의 글 목록 리스트
+		mv.addObject("limit", 10);
 		mv.setViewName("study/study");
 		return mv;
 		
 	}
+	
+	@ResponseBody
+	@RequestMapping(value="/study_ajax")
+	public Map<String, Object> studyListAjax(
+			@RequestParam(value="page", defaultValue="1", required=false) int page,
+			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
+		
+		PaginationDTO p = calculatePagination(page, limit, mainService.getStudyListCount());
+		
+		List<Board> studyList = mainService.getStudyList(page, limit);	//리스트를 받아옴
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("page", page);
+		map.put("maxpage", p.getMaxPage());
+		map.put("startpage", p.getStartPage());
+		map.put("endpage", p.getEndPage());
+		map.put("listcount", p.getListCount());
+		map.put("studyList", studyList);				//해당 페이지의 글 목록 리스트
+		map.put("limit", limit);
+		
+		return map;
+	}
+	
+	@GetMapping("/study/{num}")
+	public ModelAndView studyDetail(
+			@PathVariable("num") int num, ModelAndView mv, HttpServletRequest request,
+			@RequestHeader(value="referer", required=false) String beforeURL) {
+		
+		logger.info("referer : " + beforeURL);
+		if (beforeURL != null && beforeURL.endsWith("study")) {
+			mainService.setBoardViewUpdate(num);
+		}
+		
+		Board studyData = mainService.getBoardDetail(num);
+		if (studyData == null) {
+			logger.info("study 상세보기 실패");
+			mv.addObject("url", request.getRequestURI());
+		}else {
+			logger.info("study 상세보기 성공");
+			mv.addObject("studyData", studyData);
+			mv.setViewName("detailView/studyView");
+		}
+		return mv;
+	}
+	
+	@ResponseBody
+	@PostMapping(value="/replyList")					//boardNum -> reply.js 의 data값과 맞춰줘야한다
+	public Map<String, Object> qnaReplyList(int boardNum, int page) {
+		List<BoardReply> list = mainService.getReplyList(boardNum, page);
+		int listcount = mainService.getReplyListCount(boardNum);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("list", list);
+		map.put("listcount", listcount);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/replyInsert")
+	public int replyInsertAndUpdateReplyCount(BoardReply BoardReply) {
+		try {
+	        mainService.replyInsertAndUpdateReplyCount(BoardReply);
+	        return 1; 				// 성공
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0; 				// 실패
+	    }
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/replyUpdate")
+	public int replyUpdate(BoardReply BoardReply, RedirectAttributes ra) {
+		boolean checkResult = mainService.checkWriter(BoardReply.getReplyNum(),
+				BoardReply.getReplyWriter(),BoardReply.getReplyPass());
+		
+		String url = "";
+		
+		if (checkResult == true) {								//댓글 닉네임 비밀번호 일치시
+			return mainService.replyUpdate(BoardReply);
+		}else {
+			ra.addFlashAttribute("result", "passFail");
+		}
+		return 0;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/replyDelete")
+	public int replyDeleteAndUpdateReplyCount(BoardReply BoardReply) {
+		try {
+	        mainService.replyDeleteAndUpdateReplyCount(BoardReply);
+	        return 1; 				// 성공
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0; 				// 실패
+	    }
+	}
+	
+	
 	
 }
