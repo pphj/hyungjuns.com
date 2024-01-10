@@ -5,19 +5,358 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8" />
 <title>형준닷컴</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://kit.fontawesome.com/2432d5047b.js" crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/reply.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<!-- <script src="${pageContext.request.contextPath}/resources/js/reply.js"></script>  -->
 <script>
-	var result = "${result}";
-	if (result == 'passFail') {
-		alert("닉네임과 비밀번호를 확인하세요");
+	var url = "";
+	var data = {};
+	var updatedContent = "";
+	var page = 1;
+	const count = parseInt($("#count").text());
+	
+	$(document).ready(function() {
+		
+		
+		$("#replys").hide();
+
+	    if (count != 0) {
+	        getList(1);
+	    } else {
+	        $("#message").text("댓글이 없습니다.");
+	    }
+	    
+	    $('.submit').click(function () {							//등록 클릭 이벤트
+			const replyContent = $('#content').val().trim();
+			var writerValue = $("#replyWriter").val();
+			var passValue = $("#replyPass").val();
+			var boardNum = $("#boardNum").val();
+			
+			if (!replyContent) {
+				alert("댓글을 입력하세요");
+				return false;
+			}
+			
+			$(".wordCount").text('총 300자까지 가능합니다.');
+			
+			url = "../replyInsert";
+			data = {
+				"replyWriter": writerValue,
+				"replyPass": passValue,
+				"replyContent": replyContent,
+				"boardNum": boardNum
+			};
+			
+			submit(url, data);
+		});
+	    
+	    
+	    
+	    
+	    $('#replys').on('click', '.delete', function () {			//삭제 버튼 클릭시
+	    	$(this).closest('.delete').find('.deletePass').css('display','flex');
+	    });
+	    
+	    
+	    
+	    
+	    $('#replys').on('click', '.removeCheck', function () {		//삭제 확인버튼 클릭시
+	    	var replyNum = $(this).closest('.replyWrapper').find('#replyNum').val();
+	    	var boardNum = $("#boardNum").val();
+	    	var deletePass = $(this).closest('.replyWrapper').find("#removePass").val();
+	    	console.log(deletePass);
+	    	url = "../replyDelete";
+			data = {
+				"replyNum": replyNum,
+				"boardNum": boardNum,
+				"deletePass": deletePass
+			};
+			
+			if (deletePass === "") {
+				alert("작성시 입력한 비밀번호를 입력해주세요");
+			}else {
+				if(!confirm('정말로 삭제하시겠습니까')){
+					return;
+				}else {
+					remove(url, data);
+				}
+			};
+			
+	    	
+	    });
+	    
+	    
+	    
+	    $('#replys').on('click', '.updateSubmit', function () {		//수정완료 버튼 클릭시
+	    	const replyContent = $('#updateContent').val().trim();
+			var writerValue = $("#updateWriter").val();
+			var passValue = $("#updatePass").val();
+			var replyNum = $(this).closest('.replyWrapper').find("#replyNum").val();
+			
+			if (!replyContent) {
+				alert("수정할 댓글내용을 입력하세요");
+				return false;
+			}
+			
+			$(".updateWordCount").text('총 300자까지 가능합니다.');
+			
+			url = "../replyUpdate";
+			data = {
+				"replyWriter": writerValue,
+				"replyPass": passValue,
+				"replyContent": replyContent,
+				"replyNum": replyNum
+			};
+			
+			update(url, data);
+	    	
+	    });
+	    
+	    
+	    
+	    $('#content').on('input', function () {						//댓글 실시간 반영
+			let content = $(this).val();
+			
+			let length = content.length;
+			
+			if (length > 300) {
+				length = 300;
+				content = content.substring(0, length);
+				$(this).val(content);
+			}
+			$(".wordCount").text(length + '/300');
+		});
+		
+	    
+	});//ready end
+	
+	
+	
+	$(document).on('click', '.removeCancel', function () {		//삭제 취소버튼 클릭시
+	    $(this).closest('.deletePass').css('display', 'none');
+	});
+	
+	
+	
+	$(document).on('click', '.cancel', function () {			//취소 클릭 이벤트
+		const replyNum = $(this).data('replyNum');
+		
+		if (replyNum) {
+			$(this).closest('.reply').find('#updateReply').remove();
+		}
+		toggleUpdateCancel($(this));
+	});
+	
+	
+	
+	$(document).on('click', '.update', function () {			//수정 클릭 이벤트
+		const replyNum = $(this).closest('.reply').find('input[name="replyNum"]').val();
+		$(this).data('replyNum', replyNum);
+		
+		let output = '';
+		
+		output += '	<div class="replyContainer" id="updateReply">';
+		output += '		<div class="replyContainer">';
+		output += '    		<div class="replyInput">';
+		output += '        		<div class="replyContent">';
+		output += '            		<textarea name="content" id="updateContent" placeholder="댓글을 작성해주세요" maxlength="300"></textarea>';
+		output += '        		</div>';
+		output += '        		<div class="updateSubmit">';
+		output += '            		<button>수정완료</button>';
+		output += '        		</div>';
+		output += '    		</div>';
+		output += '			<div class="replyAttaches">';
+		output += '				<div class="attaches">';
+		output += '					<div class="writer">';
+		output += '						<i class="fa-regular fa-user"></i>&nbsp;<input name="replyWriter" id="updateWriter" placeholder="닉네임을 입력해주세요">';
+		output += '					</div>';
+		output += '					<div class="pass">';
+		output += '						<i class="fa-solid fa-key"></i>&nbsp;<input name="replyPass" id="updatePass" placeholder="비밀번호를 입력해주세요">';
+		output += '					</div>';
+		output += '					<div class="updateWordCount">총 300자까지 가능합니다.</div>';
+		output += '				</div>';
+		output += '			</div>';
+		output += '		</div>';
+		output += '	</div>';
+		
+		$(this).closest('.reply').find('#replyEtc').append(output);
+		
+		toggleUpdateCancel($(this));
+		
+		$('#updateContent').on('input', function () {			//수정 댓글 실시간 반영
+			let content = $(this).val();
+			
+			let length = content.length;
+			
+			if (length > 300) {
+				length = 300;
+				content = content.substring(0, length);
+				$(this).val(content);
+			}
+			$(".updateWordCount").text(length + '/300');
+		});
+		
+	});
+	
+	
+	
+	
+	
+	
+	function getList(currentPage) {			//댓글 목록 ajax
+		$.ajax({
+			type: "post",
+			url: "../replyList",
+			data: { "boardNum": $("#boardNum").val(), "page": currentPage },
+			dataType: "json",
+			success: function (rdata) {
+				if (rdata.listcount > 0) {
+					$("#replys").show();
+					$("#replys").empty();
+
+					$(rdata.list).each(function () {
+						let output = '';
+						let rawDate = new Date(this.creDate);
+
+						let formattedDate = rawDate.getFullYear()
+						 + '.' + (rawDate.getMonth() + 1).toString().padStart(2, '0')
+						 + '.' + (rawDate.getDate()).toString().padStart(2, '0');
+
+						output += "<div class='reply'>";
+						output += "    <div class='main'>";
+						output += "        <div class='replyWrapper'>";
+						output += "            <div class='info'>";
+						output += "                <div class='left'>";
+						output += "                    <div class='nickName'>"
+						output += "                    		<div class='text'>"
+						output += "                    			<span>" + this.replyWriter + "</span>";
+						output += "                    		</div>";
+						output += "                    </div>";
+						output += "                    <div class='time'>" + formattedDate + "</div>";
+						output += "                </div>"
+						output += "                <div class='right'>";
+						output += "                    <div class='replyRe'>";
+						output += "                        <button type='button' id='replyRe'><i class='fa-regular fa-comment-dots'></i>댓글</button>";
+						output += "                    </div>";
+						output += "                    <div class='updateBtn'>";
+						output += "                        <button type='button' class='update'><i class='fa-regular fa-pen-to-square'></i>수정</button>";
+						output += "                    </div>";
+						output += "                    <div class='delete'>";
+						output += "                        <button type='button' class='deleteBtn'><i class='fa-solid fa-trash'></i>삭제</button>";
+						output += "						   <div class='deletePass' style='display: none;'>";
+						output += "						   		<input type='text' name='removePass' id='removePass'>";
+						output += "						   		<button type='button' class='removeCheck'>확인</button>";
+						output += "						   		<div class='removeCancel'>취소</div>";
+						output += "						   </div>";
+						output += "                    </div>";
+						output += "			   		<input type='hidden' name='replyNum' value=" + this.replyNum + " id='replyNum'>";
+						output += "            	   </div>";
+						output += "            </div>";
+						output += "            <div class='replyContent' id='replyContent'>";
+						output += "            		<div>" + this.replyContent + "</div>";
+						output += "            </div>";
+						output += "            <div class='replyContainer' id='replyEtc'></div>";
+						output += "        </div>";
+						output += "    </div>";
+						output += "</div>";
+
+						$("#replys").append(output);
+						
+					});
+				} else {
+					$("#message").text("등록된 댓글이 없습니다.");
+					$("#replys").hide();
+				}
+			}
+		});
+	};// 댓글목록 end
+	
+	
+	
+	
+	function submit (url, data) {			//댓글 등록 ajax
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: data,
+			success: function (rdata) {
+				$("#content").val('');
+				
+				if (rdata == 1) {
+					alert("댓글이 등록되었습니다.");
+					$("#replyWriter").val('');
+					$("#replyPass").val('');
+					getList(page);
+				} else {
+						alert("댓글 등록 실패");
+				}
+			}
+		});
+	};
+	
+	
+	
+	
+	function update (url, data) {			//댓글 수정 ajax
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: data,
+			success: function (rdata) {
+				$("#updateContent").val('');
+				
+				if (rdata == 1) {
+					alert("댓글이 수정되었습니다.");
+					$(".submit").text("등록");
+					$(".cancel").removeClass("cancel");
+					$("#replyWriter").val('');
+					$("#replyPass").val('');
+					getList(page);
+				} else {
+					alert("댓글 수정 실패");
+				}
+			}
+		});
+		
 	}
+	
+	
+	
+	
+	function remove (url, data) {			//댓글 삭제 ajax
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: data,
+			success: function (rdata) {
+				if (rdata == 1) {
+					alert("댓글이 삭제되었습니다.");
+					getList(page);
+				} else {
+					alert("댓글 삭제 실패, 비밀번호를 확인하세요.");
+				}
+			}
+		});
+	}
+	
+	
+	
+	function toggleUpdateCancel(button) {
+		if (button.hasClass('update')) {
+			button.removeClass('update').addClass('cancel');
+			button.html('<i class="fa-solid fa-xmark"></i> 취소');
+		}else {
+			button.removeClass('cancel').addClass('update');
+			button.html('<i class="fa-regular fa-pen-to-square"></i> 수정');
+		}
+	};	
+		
+		
 </script>
 <style>
 body {
@@ -285,6 +624,33 @@ span {
     border-radius: 8px
 }
 
+.replyContainer .updateSubmit {
+	display: flex;
+    flex: .1;
+    align-items: start;
+    justify-content: center;
+    margin: 10px;
+    font-size: 1em;
+    font-weight: 700;
+    border: 0;
+    border-radius: 15px;
+}
+
+.replyContainer .updateSubmit button {
+	height: 60px;
+	box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+    padding: 10px;
+    font-size: 1em;
+    color: var(--default-anchor-color);
+    background-color: #80808054;
+    border: 0;
+    border-radius: 8px
+}
+
 .replyAttaches {
 	display: flex;
     flex-direction: column;
@@ -321,6 +687,12 @@ span {
     font-size: .8em;
 }
 
+.replyAttaches .attaches .updateWordCount {
+	width: 150px;
+    height: 30px;
+    margin: 0 0 0 325px;
+    font-size: .8em;
+}
 
 .reply {
 	display: flex;
@@ -396,7 +768,7 @@ span {
 	margin-right: 3px;
 }
 
-.reply .info .right .update {
+.reply .info .right .updateBtn {
 	margin-right: 3px;
 }
 
@@ -428,6 +800,52 @@ span {
     max-width: 100%;
     min-height: 14px;
 }
+
+.reply .deletePass {
+	overflow: hidden;
+    position: absolute;
+    width: 218px;
+    height: 31px;
+    border: 2px solid #29367c;
+    margin-left: -175px;
+}   
+
+.reply #removePass {
+
+    float: left;
+    width: 129px;
+    height: 31px;
+    line-height: 34px;
+    padding: 0 5px;
+    border: 0;
+    background: #fff;
+    font-size: 14px;
+}    
+
+.reply .removeCheck {
+	float: left;
+    width: 49px;
+    height: 31px;
+    line-height: 32px;
+    background: #3b4890;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0px 1px #1d2761;
+
+}
+
+.reply .removeCancel {
+	float: left;
+    width: 49px;
+    height: 31px;
+    line-height: 32px;
+    background: #3b4890;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0px 1px #1d2761;
+}
+    
+    
 </style>
 </head>
 <body>

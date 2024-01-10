@@ -16,5 +16,8 @@ public class BoardReply {
     private int replySeq;
     private Date creDate;
     private Date modiDate;
+    private String deletePass;
+    
+    
     
 }

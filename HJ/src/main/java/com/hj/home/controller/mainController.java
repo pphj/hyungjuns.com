@@ -377,26 +377,27 @@ public class mainController {
 		boolean checkResult = mainService.checkWriter(BoardReply.getReplyNum(),
 				BoardReply.getReplyWriter(),BoardReply.getReplyPass());
 		
-		String url = "";
-		
 		if (checkResult == true) {								//댓글 닉네임 비밀번호 일치시
 			return mainService.replyUpdate(BoardReply);
 		}else {
-			ra.addFlashAttribute("result", "passFail");
+			return 0;
 		}
-		return 0;
+		
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="/replyDelete")
-	public int replyDeleteAndUpdateReplyCount(BoardReply BoardReply) {
-		try {
+	public int replyDeleteAndUpdateReplyCount(BoardReply BoardReply, RedirectAttributes ra) {
+		boolean checkPass = mainService.checkPass(BoardReply.getReplyNum(),
+				BoardReply.getBoardNum(),BoardReply.getDeletePass());
+		
+		if (checkPass) {
 	        mainService.replyDeleteAndUpdateReplyCount(BoardReply);
-	        return 1; 				// 성공
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return 0; 				// 실패
+	        return 1;
+	    }else {
+	    	return 0;
 	    }
+		
 	}
 	
 	

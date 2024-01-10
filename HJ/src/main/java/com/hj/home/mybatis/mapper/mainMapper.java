@@ -56,6 +56,8 @@ public interface mainMapper {
 
 	BoardReply checkWriter(HashMap<String, Object> map);
 
+	BoardReply checkPass(HashMap<String, Object> map);
+
 	
 
 }

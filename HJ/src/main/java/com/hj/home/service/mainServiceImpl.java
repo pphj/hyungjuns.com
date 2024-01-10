@@ -179,6 +179,22 @@ public class mainServiceImpl implements mainService {
 		else
 			return true;
 	}
+
+	@Override
+	public boolean checkPass(int replyNum, int boardNum, String deletePass) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("replyNum", replyNum);
+		map.put("boardNum", boardNum);
+		map.put("deletePass", deletePass);
+		
+		BoardReply result = dao.checkPass(map);
+		
+		if (result == null)
+			return false;
+		else
+			return true;
+	}
 	
 	
 	

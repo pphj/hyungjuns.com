@@ -46,6 +46,8 @@ public interface mainService {
 	void replyDeleteAndUpdateReplyCount(BoardReply boardReply);
 
 	boolean checkWriter(int replyNum, String replyWriter, String replyPass);
+
+	boolean checkPass(int replyNum, int boardNum, String deletePass);
 	
 	
 	
