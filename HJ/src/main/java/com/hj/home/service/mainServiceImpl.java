@@ -195,6 +195,38 @@ public class mainServiceImpl implements mainService {
 		else
 			return true;
 	}
+
+	@Override
+	public void boardinsert(Board board) {
+		dao.boardInsert(board);
+	}
+	
+	
+	@Override
+	public void reReplyInsertAndUpdateReplyCount(BoardReply boardReply) {
+		dao.updateReplyCount(boardReply.getBoardNum());
+		dao.replySeqUpdate(boardReply);
+		
+		boardReply.setReplyLev(boardReply.getReplyLev() + 1);
+		boardReply.setReplySeq(boardReply.getReplySeq() + 1);
+		
+        dao.reReplyInsert(boardReply);
+	}
+
+	@Override
+	public int getCountDown(int num) {
+		return dao.getCountDown(num);
+	}
+
+	@Override
+	public int getCountUp(int num) {
+		return dao.getCountUp(num);
+	}
+
+	@Override
+	public int boardUpdate(Board board) {
+		return dao.boardUpdate(board);
+	}
 	
 	
 	

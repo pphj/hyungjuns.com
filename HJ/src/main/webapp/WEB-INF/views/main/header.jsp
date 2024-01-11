@@ -1,16 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8" />
 <title>형준닷컴</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://kit.fontawesome.com/2432d5047b.js" crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<meta name="_csrf" content="${_csrf.token}">
+<meta name="_csrf_header" content="${_csrf.headerName}">
+<script>
+	$(function(){
+		$("#logoutBtn").click(function(e){
+			e.preventDefault();
+			$("form[name=logout]").submit();
+		})
+		
+	});
+</script>
 <style>
 body {
 	display: flex;
@@ -44,6 +50,7 @@ header {
 	align-items: center;
 	justify-content: end;
 	width: 950px;
+	height: 50px;
 	margin: auto;
 }
 
@@ -103,18 +110,75 @@ div {
     vertical-align: baseline;
     border: 0;
 }
+
+#sub ul a {
+	display: flex;
+    padding: 10px;
+    color: black;
+    text-decoration: none;
+}
+
+#sub ul li {
+	width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+#sub ul li form {
+	display: flex;
+	align-items: center;
+}
+
+#sub ul li form input {
+	width: 90%;
+	height: 25px;
+	font-size: 14px;
+	border: 1px solid black;
+	border-radius: 8px;
+	background: #0000ff21;
+}
+
+#sub ul li form #pw {
+	margin-left: 5px;
+}
+
+#sub ul li form .loginSubmit {
+	height: 25px;
+    font-size: .8em;
+    color: var(--default-anchor-color);
+    word-break: keep-all;
+    background-color: #8080803d;
+    border: 0;
+    border-radius: 6px;
+    margin-left: 5px;
+}
 </style>
 </head>
 <body>
 	<header>
 		<section id="sub">
 			<ul>
+				<sec:authorize access="isAnonymous()">
 				<li>
-					<a href="#">닉네임</a>
+					<div class='loginContainer'>
+						<form action="${pageContext.request.contextPath}/.com/loginProcess" method="post" name="login">
+							<input type='text' class='dropdown-item' id='id' name='id' placeholder="아이디">
+							<input type='text' class='dropdown-item' id='pw' name='pw' placeholder="비밀번호">
+							<button type="submit" class="loginSubmit">로그인</button>
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+						</form>
+					</div>
 				</li>
-				<li>
-					<a href="#">로그아웃</a>
-				</li>
+				</sec:authorize>
+				<sec:authorize access="isAuthenticated()">
+					<sec:authentication property="principal" var="pinfo" />
+						<form action="${pageContext.request.contextPath}/.com/logout" method="post" name="logout">
+							<a class="logoutBtn" href="#" id="logoutBtn">
+								<span id="loginid">${pinfo.username }</span>(로그아웃)
+							</a>
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+						</form>
+				</sec:authorize>
 			</ul>
 		</section>
 		<section id="main">

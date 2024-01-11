@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.hj.home.DTO.Admin;
 import com.hj.home.DTO.Board;
 import com.hj.home.DTO.BoardReply;
 
@@ -57,6 +58,20 @@ public interface mainMapper {
 	BoardReply checkWriter(HashMap<String, Object> map);
 
 	BoardReply checkPass(HashMap<String, Object> map);
+
+	void boardInsert(Board board);
+
+	Admin adminId(String name);
+
+	void reReplyInsert(BoardReply boardReply);
+
+	void replySeqUpdate(BoardReply boardReply);
+
+	int getCountDown(int num);
+
+	int getCountUp(int num);
+
+	int boardUpdate(Board board);
 
 	
 

@@ -1,21 +1,25 @@
 package com.hj.home.controller;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -77,12 +81,6 @@ public class mainController {
 		
 		List<Board> projectList = mainService.getProjectList(index, search_word, page, 10);
 		
-//		for (Board board : projectList) {
-//	        int boardNum = board.getBoardNum();
-//	        int boardReplyCount = mainService.getBoardReplyCount(boardNum);
-//	        board.setBoardReplyCount(boardReplyCount);
-//	    }
-		
 		mv.addObject("page", page);
 		mv.addObject("maxpage", p.getMaxPage());		
 		mv.addObject("startpage", p.getStartPage());	
@@ -124,20 +122,25 @@ public class mainController {
 			@PathVariable("num") int num, ModelAndView mv, HttpServletRequest request,
 			@RequestHeader(value="referer", required=false) String beforeURL) {
 		
-		logger.info("referer : " + beforeURL);
 		if (beforeURL != null && beforeURL.endsWith("project")) {
 			mainService.setBoardViewUpdate(num);
 		}
 		
 		Board projectData = mainService.getBoardDetail(num);
+		
 		if (projectData == null) {
 			logger.info("project 상세보기 실패");
 			mv.addObject("url", request.getRequestURI());
 		}else {
 			logger.info("project 상세보기 성공");
+			int countDown = mainService.getCountDown(num);
+			int countUp = mainService.getCountUp(num);
 			int count = mainService.getReplyListCount(num);
+			
 			mv.addObject("count", count);
 			mv.addObject("projectData", projectData);
+			mv.addObject("countDown", countDown);
+			mv.addObject("countUp", countUp);
 			mv.setViewName("detailView/projectView");
 		}
 		return mv;
@@ -361,7 +364,7 @@ public class mainController {
 	
 	@ResponseBody
 	@RequestMapping(value="/replyInsert")
-	public int replyInsertAndUpdateReplyCount(BoardReply BoardReply) {
+	public int replyInsertAndUpdateReplyCount(BoardReply BoardReply) {			//댓글 등록
 		try {
 	        mainService.replyInsertAndUpdateReplyCount(BoardReply);
 	        return 1; 				// 성공
@@ -373,7 +376,7 @@ public class mainController {
 	
 	@ResponseBody
 	@RequestMapping(value="/replyUpdate")
-	public int replyUpdate(BoardReply BoardReply, RedirectAttributes ra) {
+	public int replyUpdate(BoardReply BoardReply, RedirectAttributes ra) {			//댓글 수정
 		boolean checkResult = mainService.checkWriter(BoardReply.getReplyNum(),
 				BoardReply.getReplyWriter(),BoardReply.getReplyPass());
 		
@@ -387,7 +390,7 @@ public class mainController {
 	
 	@ResponseBody
 	@RequestMapping(value="/replyDelete")
-	public int replyDeleteAndUpdateReplyCount(BoardReply BoardReply, RedirectAttributes ra) {
+	public int replyDeleteAndUpdateReplyCount(BoardReply BoardReply, RedirectAttributes ra) {		//댓글 삭제
 		boolean checkPass = mainService.checkPass(BoardReply.getReplyNum(),
 				BoardReply.getBoardNum(),BoardReply.getDeletePass());
 		
@@ -400,6 +403,96 @@ public class mainController {
 		
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="/reReplyInsert")
+	public int reReplyInsertAndUpdateReplyCount(BoardReply BoardReply) {		//대댓글 등록
+		try {
+	        mainService.reReplyInsertAndUpdateReplyCount(BoardReply);
+	        return 1; 				// 성공
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0; 				// 실패
+	    }
+	}
 	
+	
+	@GetMapping("/write")
+	public String writeBoard() {		//글쓰기 이동
+		return "write/writeBoard";
+	}
+	
+	
+	@PostMapping(value="/boardInsert")
+	public String boardInsert(Board board, HttpServletRequest request) throws Exception {		//게시글 등록
+		mainService.boardinsert(board);
+		
+		logger.info(board.toString());
+		
+		return "redirect:main";
+		
+	}
+	
+	
+	@RequestMapping(value="/login", method=RequestMethod.GET)
+	public ModelAndView login(ModelAndView mv, @CookieValue(value="saveid",
+		required=false) Cookie readCookie, HttpSession session, Principal userPrincipal) {			//로그인
+		
+		if (readCookie != null) {
+			logger.info("저장된 아이디 : " + userPrincipal.getName());				//로그인한 아이디값을 로그에 찍어봄
+			mv.setViewName("redirect:/.com/main");
+		}else {
+			mv.setViewName("main/mainPage");
+			mv.addObject("loginfail", session.getAttribute("loginfail"));		//loginfail을 mv에 저장해주고
+			session.removeAttribute("loginfail");								//세션값은 삭제한다
+		}
+		
+		return mv;
+	}
+	
+
+	@RequestMapping(value="/logout")
+	public String logout(HttpSession session) {			//로그아웃
+		session.invalidate();
+		return "redirect:/.com/main";
+	}
+	
+	
+	@GetMapping("/updateBoard/{num}")
+	public ModelAndView faqUpdateView(@PathVariable("num") int num, ModelAndView mv,
+															HttpServletRequest request) {		//게시글 수정 이동
+		Board board = mainService.getBoardDetail(num);
+		
+		if (board == null) {									//글 불러오기 실패시
+			logger.info("글 수정 이동 실패");
+			mv.addObject("url", request.getRequestURL());
+			mv.addObject("message", "글 수정 이동 실패");
+			return mv;
+		}
+		
+		logger.info("글 수정 이동 성공");
+		mv.addObject("board", board);
+		mv.setViewName("write/updateBoard");
+		return mv;
+	}
+	
+	
+	@PostMapping(value="/boardUpdate")
+	public String boardUpdate(Board board, RedirectAttributes ra) throws Exception {			//게시글 수정
+		int result = mainService.boardUpdate(board);
+		logger.info(board.toString());
+		String url = "";
+		
+		if (result == 0) {
+			logger.info("게시글 수정 실패");
+			
+			url = "error/error";
+		}else {
+			logger.info("게시글 수정 성공");
+			
+			url = "redirect:main";
+		}
+		return url;
+		
+	}
 	
 }

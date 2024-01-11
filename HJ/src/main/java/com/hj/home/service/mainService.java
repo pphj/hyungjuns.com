@@ -48,6 +48,16 @@ public interface mainService {
 	boolean checkWriter(int replyNum, String replyWriter, String replyPass);
 
 	boolean checkPass(int replyNum, int boardNum, String deletePass);
+
+	void boardinsert(Board board);
+
+	void reReplyInsertAndUpdateReplyCount(BoardReply boardReply);
+
+	int getCountDown(int num);
+
+	int getCountUp(int num);
+
+	int boardUpdate(Board board);
 	
 	
 	

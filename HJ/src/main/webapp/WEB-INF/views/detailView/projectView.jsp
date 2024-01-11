@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -118,6 +119,43 @@
 	    });
 	    
 	    
+	    $('#replys').on('click', '.reReplySubmit', function () {		//대댓글 등록 버튼 클릭시
+	    	const replyContent = $('#reReplyContent').val().trim();
+			var writerValue = $("#updateWriter").val();
+			var passValue = $("#updatePass").val();
+			var replyNum = $(this).closest('.replyWrapper').find("#replyNum").val();
+			var replyRef = $(this).closest('.replyWrapper').find("#replyRef").val();
+			var replyLev = $(this).closest('.replyWrapper').find("#replyLev").val();
+			var replySeq = $(this).closest('.replyWrapper').find("#replySeq").val();
+			var boardNum = $("#boardNum").val();
+			console.log(replyNum);
+			console.log(replyRef);
+			console.log(replyLev);
+			console.log(replySeq);
+			if (!replyContent) {
+				alert("댓글내용을 입력하세요");
+				return false;
+			}
+			
+			$(".reReplyWordCount").text('총 300자까지 가능합니다.');
+			
+			url = "../reReplyInsert";
+			data = {
+				"replyWriter": writerValue,
+				"replyPass": passValue,
+				"replyContent": replyContent,
+				"replyNum": replyNum,
+				"boardNum": boardNum,
+				"replyRef": replyRef,
+				"replyLev": replyLev,
+				"replySeq": replySeq
+			};
+			
+			reReply(url, data);
+	    	
+	    });
+	    
+	    
 	    
 	    $('#content').on('input', function () {						//댓글 실시간 반영
 			let content = $(this).val();
@@ -152,6 +190,15 @@
 		toggleUpdateCancel($(this));
 	});
 	
+	
+	$(document).on('click', '.reCancel', function () {			//댓글 취소 클릭 이벤트
+		const replyNum = $(this).data('replyNum');
+		
+		if (replyNum) {
+			$(this).closest('.reply').find('#updateReply').remove();
+		}
+		toggleReplyCancel($(this));
+	});
 	
 	
 	$(document).on('click', '.update', function () {			//수정 클릭 이벤트
@@ -204,22 +251,77 @@
 	});
 	
 	
-	
+	$(document).on('click', '.reReply', function () {			//댓글 클릭시 이벤트
+		const replyNum = $(this).closest('.reply').find('input[name="replyNum"]').val();
+		$(this).data('replyNum', replyNum);
+		
+		let output = '';
+		
+		output += '	<div class="replyContainer" id="updateReply">';
+		output += '		<div class="replyContainer">';
+		output += '    		<div class="replyInput">';
+		output += '        		<div class="replyContent">';
+		output += '            		<textarea name="content" id="reReplyContent" placeholder="댓글을 작성해주세요" maxlength="300"></textarea>';
+		output += '        		</div>';
+		output += '        		<div class="reReplySubmit">';
+		output += '            		<button>등록</button>';
+		output += '        		</div>';
+		output += '    		</div>';
+		output += '			<div class="replyAttaches">';
+		output += '				<div class="attaches">';
+		output += '					<div class="writer">';
+		output += '						<i class="fa-regular fa-user"></i>&nbsp;<input name="replyWriter" id="updateWriter" placeholder="닉네임을 입력해주세요">';
+		output += '					</div>';
+		output += '					<div class="pass">';
+		output += '						<i class="fa-solid fa-key"></i>&nbsp;<input name="replyPass" id="updatePass" placeholder="비밀번호를 입력해주세요">';
+		output += '					</div>';
+		output += '					<div class="reReplyWordCount">총 300자까지 가능합니다.</div>';
+		output += '				</div>';
+		output += '			</div>';
+		output += '		</div>';
+		output += '	</div>';
+		
+		$(this).closest('.reply').find('#replyEtc').append(output);
+		
+		toggleReplyCancel($(this));
+		
+		$('#reReplyContent').on('input', function () {			//수정 댓글 실시간 반영
+			let content = $(this).val();
+			
+			let length = content.length;
+			
+			if (length > 300) {
+				length = 300;
+				content = content.substring(0, length);
+				$(this).val(content);
+			}
+			$(".reReplyWordCount").text(length + '/300');
+		});
+		
+		
+	});
 	
 	
 	
 	function getList(currentPage) {			//댓글 목록 ajax
+		var token = $("meta[name='_csrf']").attr("content");	
+		var header = $("meta[name='_csrf_header']").attr("content");
+		
 		$.ajax({
 			type: "post",
 			url: "../replyList",
 			data: { "boardNum": $("#boardNum").val(), "page": currentPage },
 			dataType: "json",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
 			success: function (rdata) {
 				if (rdata.listcount > 0) {
 					$("#replys").show();
 					$("#replys").empty();
 
 					$(rdata.list).each(function () {
+						var lev = (this.replyLev > 0) ? 30 : 0;
 						let output = '';
 						let rawDate = new Date(this.creDate);
 
@@ -227,7 +329,7 @@
 						 + '.' + (rawDate.getMonth() + 1).toString().padStart(2, '0')
 						 + '.' + (rawDate.getDate()).toString().padStart(2, '0');
 
-						output += "<div class='reply'>";
+						output += "<div class='reply' style='margin-left: " + lev + "px;'>";
 						output += "    <div class='main'>";
 						output += "        <div class='replyWrapper'>";
 						output += "            <div class='info'>";
@@ -241,7 +343,7 @@
 						output += "                </div>"
 						output += "                <div class='right'>";
 						output += "                    <div class='replyRe'>";
-						output += "                        <button type='button' id='replyRe'><i class='fa-regular fa-comment-dots'></i>댓글</button>";
+						output += "                        <button type='button' class='reReply'><i class='fa-regular fa-comment-dots'></i>댓글</button>";
 						output += "                    </div>";
 						output += "                    <div class='updateBtn'>";
 						output += "                        <button type='button' class='update'><i class='fa-regular fa-pen-to-square'></i>수정</button>";
@@ -255,6 +357,9 @@
 						output += "						   </div>";
 						output += "                    </div>";
 						output += "			   		<input type='hidden' name='replyNum' value=" + this.replyNum + " id='replyNum'>";
+						output += "			   		<input type='hidden' name='replySeq' value=" + this.replySeq + " id='replySeq'>";
+						output += "			   		<input type='hidden' name='replyLev' value=" + this.replyLev + " id='replyLev'>";
+						output += "			   		<input type='hidden' name='replyRef' value=" + this.replyRef + " id='replyRef'>";
 						output += "            	   </div>";
 						output += "            </div>";
 						output += "            <div class='replyContent' id='replyContent'>";
@@ -280,10 +385,16 @@
 	
 	
 	function submit (url, data) {			//댓글 등록 ajax
+		var token = $("meta[name='_csrf']").attr("content");	
+		var header = $("meta[name='_csrf_header']").attr("content");
+		
 		$.ajax({
 			type: 'post',
 			url: url,
 			data: data,
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
 			success: function (rdata) {
 				$("#content").val('');
 				
@@ -303,10 +414,16 @@
 	
 	
 	function update (url, data) {			//댓글 수정 ajax
+		var token = $("meta[name='_csrf']").attr("content");	
+		var header = $("meta[name='_csrf_header']").attr("content");
+		
 		$.ajax({
 			type: 'post',
 			url: url,
 			data: data,
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
 			success: function (rdata) {
 				$("#updateContent").val('');
 				
@@ -329,10 +446,16 @@
 	
 	
 	function remove (url, data) {			//댓글 삭제 ajax
+		var token = $("meta[name='_csrf']").attr("content");	
+		var header = $("meta[name='_csrf_header']").attr("content");
+		
 		$.ajax({
 			type: 'post',
 			url: url,
 			data: data,
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
 			success: function (rdata) {
 				if (rdata == 1) {
 					alert("댓글이 삭제되었습니다.");
@@ -345,6 +468,33 @@
 	}
 	
 	
+	function reReply (url, data) {			//대댓글 등록 ajax
+		var token = $("meta[name='_csrf']").attr("content");	
+		var header = $("meta[name='_csrf_header']").attr("content");
+		
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: data,
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
+			success: function (rdata) {
+				$("#content").val('');
+				
+				if (rdata == 1) {
+					alert("대댓글이 등록되었습니다.");
+					$("#updateWriter").val('');
+					$("#updatePass").val('');
+					getList(page);
+				} else {
+					alert("대댓글 등록 실패");
+				}
+			}
+		});
+	};
+	
+	
 	
 	function toggleUpdateCancel(button) {
 		if (button.hasClass('update')) {
@@ -355,7 +505,17 @@
 			button.html('<i class="fa-regular fa-pen-to-square"></i> 수정');
 		}
 	};	
-		
+	
+	
+	function toggleReplyCancel(button) {
+		if (button.hasClass('reReply')) {
+			button.removeClass('reReply').addClass('reCancel');
+			button.html('<i class="fa-solid fa-xmark"></i> 취소');
+		}else {
+			button.removeClass('reCancel').addClass('reReply');
+			button.html('<i class="fa-regular fa-comment-dots"></i> 댓글');
+		}
+	};
 		
 </script>
 <style>
@@ -651,6 +811,33 @@ span {
     border-radius: 8px
 }
 
+.replyContainer .reReplySubmit {
+	display: flex;
+    flex: .1;
+    align-items: start;
+    justify-content: center;
+    margin: 10px;
+    font-size: 1em;
+    font-weight: 700;
+    border: 0;
+    border-radius: 15px;
+}
+
+.replyContainer .reReplySubmit button {
+	height: 60px;
+	box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+    padding: 10px;
+    font-size: 1em;
+    color: var(--default-anchor-color);
+    background-color: #80808054;
+    border: 0;
+    border-radius: 8px
+}
+
 .replyAttaches {
 	display: flex;
     flex-direction: column;
@@ -694,11 +881,26 @@ span {
     font-size: .8em;
 }
 
+.replyAttaches .attaches .reReplyWordCount {
+	width: 150px;
+    height: 30px;
+    margin: 0 0 0 325px;
+    font-size: .8em;
+}
+
 .reply {
 	display: flex;
     flex: 1;
     flex-direction: column;
     gap: 3px;
+}
+
+.replys #replyLev0 {
+	margin: 0px;
+}
+
+.replys #replyLev1 {
+	margin: 0px 0px 0px 30px;
 }
 
 .reply .main {
@@ -895,7 +1097,9 @@ span {
 					<div class="listAndEdit">
 						<div class="left">
 							<div class="button">
-								<a href="#">이전 글</a>
+								<c:if test="${countDown != 0}">
+									<a href="${pageContext.request.contextPath}/.com/project/${countDown}">이전 글</a>
+								</c:if>
 							</div>
 						</div>
 						<div class="center">
@@ -905,7 +1109,9 @@ span {
 						</div>
 						<div class="right">
 							<div class="button">
-								<a href="#">다음 글</a>
+								<c:if test="${countUp != 0}">
+									<a href="${pageContext.request.contextPath}/.com/project/${countUp}">다음 글</a>
+								</c:if>
 							</div>
 						</div>
 					</div>
@@ -944,7 +1150,13 @@ span {
 								<a href="${pageContext.request.contextPath}/.com/project">목록</a>
 							</div>
 						</div>
-						<div class="right"></div>
+						<div class="right">
+							<sec:authorize access="isAuthenticated()">
+							<div class="button">
+								<a href="${pageContext.request.contextPath}/.com/updateBoard/${projectData.boardNum}">수정</a>
+							</div>
+							</sec:authorize>
+						</div>
 					</div>
 					<br>
 				</div>

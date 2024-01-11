@@ -67,6 +67,7 @@ p > strong > a {
 }
 </style>
 </head>
+<input type="hidden" name="id" id="id" value="${admin.id}" />
 <body>
 	<jsp:include page="../main/header.jsp"/>
 	<main>

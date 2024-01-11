@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,6 +12,14 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+	$(document).ready(function(){
+		$('.projectWbtn').click(function () {
+			location.href = "${pageContext.request.contextPath}/.com/write";
+		});
+		
+	})
+</script>
 <style>
 body {
 	display: flex;
@@ -210,6 +219,7 @@ main {
     background-color: #03df0345;
     border: 0;
     border-radius: 8px;
+	width: 190px;
 }
 
 .search > button {
@@ -282,7 +292,7 @@ main {
 			 			</c:if>
 			 			<c:if test="${page > 1}">
 			 				<li class="prev">
-			 					<a class="pageNumber" href="project?page=${page-1}"><i class="fa fa-chevron-left" aria-hidden="true"></i>;</a>
+			 					<a class="pageNumber" href="project?page=${page-1}"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
 			 				</li>
 			 			</c:if>
 			 			
@@ -334,7 +344,9 @@ main {
 				</form>
 			</div>
 			<div class="write">
+				<sec:authorize access="isAuthenticated()">
 				<button type="button" id="projectWbtn" class="projectWbtn">글쓰기</button>
+				</sec:authorize>
 			</div>
 		</div>
 	</main>
