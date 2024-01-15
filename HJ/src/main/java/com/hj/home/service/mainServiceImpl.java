@@ -53,10 +53,21 @@ public class mainServiceImpl implements mainService {
 	}
 	
 	@Override
-	public List<Board> getProjectList(int index, String search_word, int page, int limit) {
-		String[] searchField = {"제목", "날짜"};
-		Map<String, Object> list = listLogic_Search(index, search_word, page, limit, searchField);
-		return dao.getProjectList2(list);
+	public List<Board> getCsList(int page, int limit) {
+		HashMap<String, Integer> list = listLogic(page, limit);
+		return dao.getCsList(list);
+	}
+
+	@Override
+	public List<Board> getCodingList(int page, int limit) {
+		HashMap<String, Integer> list = listLogic(page, limit);
+		return dao.getCodingList(list);
+	}
+
+	@Override
+	public List<Board> getStudyList(int page, int limit) {
+		HashMap<String, Integer> list = listLogic(page, limit);
+		return dao.getStudyList(list);
 	}
 
 	@Override
@@ -75,34 +86,8 @@ public class mainServiceImpl implements mainService {
 	}
 
 	@Override
-	public List<Board> getCsList(int index, String search_word, int page, int limit) {
-		String[] searchField = {"제목", "날짜"};
-		Map<String, Object> list = listLogic_Search(index, search_word, page, limit, searchField);
-		return dao.getCsList2(list);
-	}
-
-	@Override
-	public List<Board> getCsList(int page, int limit) {
-		HashMap<String, Integer> list = listLogic(page, limit);
-		return dao.getCsList(list);
-	}
-
-	@Override
 	public int getCodingListCount() {
 		return dao.getCodingListCount();
-	}
-
-	@Override
-	public List<Board> getCodingList(int index, String search_word, int page, int limit) {
-		String[] searchField = {"제목", "날짜"};
-		Map<String, Object> list = listLogic_Search(index, search_word, page, limit, searchField);
-		return dao.getCodingList2(list);
-	}
-
-	@Override
-	public List<Board> getCodingList(int page, int limit) {
-		HashMap<String, Integer> list = listLogic(page, limit);
-		return dao.getCodingList(list);
 	}
 
 	@Override
@@ -110,19 +95,6 @@ public class mainServiceImpl implements mainService {
 		return dao.getStudyListCount();
 	}
 
-	@Override
-	public List<Board> getStudyList(int index, String search_word, int page, int limit) {
-		String[] searchField = {"제목", "날짜"};
-		Map<String, Object> list = listLogic_Search(index, search_word, page, limit, searchField);
-		return dao.getStudyList2(list);
-	}
-
-	@Override
-	public List<Board> getStudyList(int page, int limit) {
-		HashMap<String, Integer> list = listLogic(page, limit);
-		return dao.getStudyList(list);
-	}
-	
 	@Override
 	public Board getBoardDetail(int num) {
 		return dao.getBoardDetail(num);
@@ -224,19 +196,15 @@ public class mainServiceImpl implements mainService {
 	}
 
 	@Override
-	public int boardUpdate(Board board) {
-		return dao.boardUpdate(board);
+	public int updateBoard(Board board) {
+		return dao.updateBoard(board);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	@Override
+	public int deleteBoard(int boardNum) {
+		return dao.deleteBoard(boardNum);
+	}
+
 	
 	
 }

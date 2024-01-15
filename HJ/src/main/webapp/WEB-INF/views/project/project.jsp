@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
@@ -17,13 +18,18 @@
 		$('.projectWbtn').click(function () {
 			location.href = "${pageContext.request.contextPath}/.com/write";
 		});
-		
 	})
 </script>
 <style>
+@font-face {
+	font-family: 'godic';
+	src: url('${pageContext.request.contextPath}/font/godic.ttf') format('truetype');
+}
+
 body {
 	display: flex;
 	flex-direction: column;
+	font-family: 'godic', sans-serif;
 	font-size: 14px;
 	line-height: normal;
 	color: black;
@@ -45,7 +51,7 @@ main {
 }
 
 #board > a {
-	background-color: #80808029;
+	background-color: #E1FFFA;
 	text-decoration: none;
 }
 
@@ -54,6 +60,8 @@ main {
 	justify-content: space-between;
 	padding: 5px 10px;
 	border-bottom: 1px solid black;
+	height: 50px;
+    font-size: 16px;
 }
 
 .info {
@@ -80,7 +88,7 @@ main {
     color: black;
     word-break: keep-all;
     white-space: nowrap;
-    background-color: #8080803d;
+    background-color: #A9CEC2;
     border: solid 1px;
     border-radius: 6px;
 }
@@ -106,7 +114,7 @@ main {
     margin-left: 5px;
     font-size: .9em;
     font-weight: 700;
-    color: red;
+    color: #d500ffba;
     text-align: center;
     border-radius: 3px;
 }
@@ -157,7 +165,8 @@ main {
     margin: 0 5px;
     border-right: 0;
     border-radius: 4px;
-    background-color: #00ffe54f;
+    color: #E1FFFA;
+    background-color: #ACA9BB;
 }
 
 .next {
@@ -203,7 +212,7 @@ main {
     font-size: 1em;
     color: var(--default-anchor-color);
     cursor: pointer;
-    background-color: #03df0345;
+    background-color: #ACA9BB;
     border: 0;
     border-radius: 8px;
     appearance: none;
@@ -216,7 +225,7 @@ main {
     padding: 0 16px;
     margin: 0 14px;
     font-size: 1em;
-    background-color: #03df0345;
+    background-color: #ACA9BB;
     border: 0;
     border-radius: 8px;
 	width: 190px;
@@ -229,7 +238,7 @@ main {
     margin: 0;
     font-size: 1em;
     color: var(--default-font-color);
-    background-color: #03df0345;
+    background-color: #ACA9BB;
     border: 0;
     border-radius: 8px;
 }
@@ -246,7 +255,7 @@ main {
     height: 40px;
     padding: 0 20px;
     font-size: 1em;
-    background-color: #03df0345;
+    background-color: #ACA9BB;
     border-radius: 8px;
     text-decoration: none;
     border: none;
@@ -270,7 +279,12 @@ main {
 							<div class="titleContainer">
 								<span class="category">${F.cateName }</span>
 								<span class="title">
-									<span class="text">${F.boardTitle }</span>
+									<c:if test="${F.boardTitle.length() >= 25}">
+										<span class="text">${F.boardTitle.substring(0,25)}...</span>
+									</c:if>
+									<c:if test="${F.boardTitle.length() < 25}">
+										<span class="text">${F.boardTitle}</span>
+									</c:if>
 									<span class="commentCount">${F.replyCount}</span>
 								</span>
 							</div>
@@ -278,6 +292,17 @@ main {
 								<div class="id">${F.id }</div>
 								<div class="dot"><i class="fa-regular fa-circle" style="font-size: 5px;"></i></div>
 								<div class="viewCount"><i class="fa-regular fa-eye"></i>&nbsp;${F.boardView }</div>
+								<div class="dot"><i class="fa-regular fa-circle" style="font-size: 5px;"></i></div>
+								<c:choose>   
+								    <c:when test="${not empty F.modiDate}">
+										<fmt:formatDate value="${F.modiDate}" pattern="yyyy-MM-dd" var="formattedDate" />
+									    <div class="boardDate"><c:out value="${formattedDate}" /></div>
+									</c:when>
+									<c:otherwise>
+										<fmt:formatDate value="${F.creDate}" pattern="yyyy-MM-dd" var="formattedDate" />
+										<div class="boardDate"><c:out value="${formattedDate}" /></div>
+									</c:otherwise>
+								</c:choose>
 							</div>
 						</div>
 					</a>
@@ -327,7 +352,15 @@ main {
 				<h3 style="text-align: center">등록된 글이 없습니다.</h3>
 			</c:if>
 		</section>
-		<div class="searchArea">
+		<div class="write">
+			<sec:authorize access="isAuthenticated()">
+			<button type="button" id="projectWbtn" class="projectWbtn">글쓰기</button>
+			</sec:authorize>
+		</div>
+		<br>
+		<br>
+		<br>
+		<!-- <div class="searchArea">
 			<div></div>
 			<div>
 				<form action="project" method="post" id="project_Form">
@@ -349,6 +382,7 @@ main {
 				</sec:authorize>
 			</div>
 		</div>
+		-->
 	</main>
 </body>
 </html>

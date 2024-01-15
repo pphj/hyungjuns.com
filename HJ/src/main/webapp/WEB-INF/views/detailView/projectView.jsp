@@ -13,7 +13,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-<!-- <script src="${pageContext.request.contextPath}/resources/js/reply.js"></script>  -->
 <script>
 	var url = "";
 	var data = {};
@@ -128,10 +127,7 @@
 			var replyLev = $(this).closest('.replyWrapper').find("#replyLev").val();
 			var replySeq = $(this).closest('.replyWrapper').find("#replySeq").val();
 			var boardNum = $("#boardNum").val();
-			console.log(replyNum);
-			console.log(replyRef);
-			console.log(replyLev);
-			console.log(replySeq);
+			
 			if (!replyContent) {
 				alert("댓글내용을 입력하세요");
 				return false;
@@ -516,12 +512,28 @@
 			button.html('<i class="fa-regular fa-comment-dots"></i> 댓글');
 		}
 	};
-		
+
+	
+	
+	
+	$(function(){
+		$(".deleteBoardButton").click(function(){
+			$("#deleteBoardModal").modal("show");
+		})
+	})
+	
+	
 </script>
 <style>
+@font-face {
+	font-family: 'godic';
+	src: url('${pageContext.request.contextPath}/font/godic.ttf') format('truetype');
+}
+
 body {
 	display: flex;
 	flex-direction: column;
+	font-family: 'godic', sans-serif;
 	font-size: 14px;
 	line-height: normal;
 	color: black;
@@ -590,7 +602,7 @@ a {
     margin-right: 10px;
     color: var(--default-anchor-color);
     word-break: keep-all;
-    background-color: #8080803d;
+    background-color: #A9CEC2;
     border-radius: 6px;
 }
 
@@ -696,8 +708,25 @@ span {
     padding: 0 20px;
     font-size: 1em;
     color: var(--default-anchor-color);
-    background-color: #03df0345;
+    background-color: #ACA9BB;
     border-radius: 8px;
+}
+
+
+#article .deleteBoardButton {
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: 40px;
+    padding: 0 20px;
+    font-size: 1em;
+    background-color: #ACA9BB;
+    border-radius: 8px;
+}
+
+#article .deleteBoardButton a {
+    color: black;
 }
 
 #article .item .listAndEdit .center .button {
@@ -893,6 +922,7 @@ span {
     flex: 1;
     flex-direction: column;
     gap: 3px;
+    background-color: #aca9bb2e;
 }
 
 .replys #replyLev0 {
@@ -1155,12 +1185,31 @@ span {
 							<div class="button">
 								<a href="${pageContext.request.contextPath}/.com/updateBoard/${projectData.boardNum}">수정</a>
 							</div>
+							<div class="deleteBoardButton">
+								<a href="#">삭제</a>
+							</div>
 							</sec:authorize>
 						</div>
 					</div>
 					<br>
 				</div>
 		</article>
+		<%-- 삭제 모달 시작 --%>
+ 			<div class="modal" id="deleteBoardModal">
+ 				<div class="modal-dialog">
+ 					<div class="modal-content">
+ 						<div class="modal-body">	<%-- 모달 바디 --%>
+ 							<form name="deleteBoardForm" action="${pageContext.request.contextPath}/.com/deleteBoard" method="post">
+ 								<input type="hidden" name="boardNum" value="${projectData.boardNum}" id="boardNum">
+ 								<button type="submit" class="btn btn-primary">삭제</button>
+ 								<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+ 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+ 							</form>
+ 						</div>
+ 					</div>
+ 				</div>
+ 			</div>
+ 		<%-- 삭제 모달 끝 --%>
 	</main>
 </body>
 </html>

@@ -12,9 +12,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <style>
+@font-face {
+	font-family: 'godic';
+	src: url('${pageContext.request.contextPath}/font/godic.ttf') format('truetype');
+}
+
 body {
 	display: flex;
 	flex-direction: column;
+	font-family: 'godic', sans-serif;
 	font-size: 14px;
 	line-height: normal;
 	color: black;
@@ -65,6 +71,8 @@ p > strong > a {
   text-decoration : none;
   
 }
+
+
 </style>
 </head>
 <input type="hidden" name="id" id="id" value="${admin.id}" />
@@ -83,13 +91,13 @@ p > strong > a {
 			  <!-- 사진 -->
 			  <div class="carousel-inner">
 			    <div class="carousel-item active">
-			      <img src="${pageContext.request.contextPath}/resources/image/gross.jpg" class="d-block w-100" style="height: 250px">
+			    	<img src="${pageContext.request.contextPath}/resources/image/gross.jpg" class="d-block w-100" style="height: 250px">
 			    </div>
 			    <div class="carousel-item">
-			      <img src="${pageContext.request.contextPath}/resources/image/sayles.jpg" class="d-block w-100" style="height: 250px">
+			    	<img src="${pageContext.request.contextPath}/resources/image/sayles.jpg" class="d-block w-100" style="height: 250px">
 			    </div>
 			    <div class="carousel-item">
-			      <img src="${pageContext.request.contextPath}/resources/image/vinh.jpg" class="d-block w-100" style="height: 250px">
+			    	<img src="${pageContext.request.contextPath}/resources/image/vinh.jpg" class="d-block w-100" style="height: 250px">
 			    </div>
 			  </div>
 			
@@ -124,8 +132,8 @@ p > strong > a {
 			<hr>
 			<div>
 				<h3><i class="fa-solid fa-paperclip"></i>&nbsp;&nbsp;개인채널</h3>
-				<p><strong>ITDA 프로젝트 시연 영상 : https://www.youtube.com/watch?v=awDHKsONkD0</strong><br>
-				   <strong>깃 : https://github.com/pphj/portfolio<br>
+				<p><strong>ITDA 프로젝트 시연 영상 ->&nbsp;&nbsp;<a href="https://www.youtube.com/watch?v=awDHKsONkD0">보러가기</a></strong><br>
+				   <strong>깃 : <a href="https://github.com/pphj/portfolio">https://github.com/pphj/portfolio</a></strong><br>
 				</p>
 			</div>
 			<hr>

@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,9 +12,10 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 <script>
 	$(document).ready(function() {
-	    $('#summernote').summernote({
-	        minHeight: 400
-	    });
+		$('#summernote').summernote({
+			placeholder: '내용을 입력하세요.',
+			minHeight: 400
+		});
 	});
 </script>
 <style>
@@ -155,8 +155,8 @@ article #boardWrite {
 	<jsp:include page="../main/header.jsp"/>
 	<main>
 		<article>
-			<h1>글 수정</h1>
-			<form action="boardUpdate" method="post" enctype="multipart/form-data">
+			<h1>글쓰기</h1>
+			<form action="${pageContext.request.contextPath}/.com/updateBoard" method="post" enctype="multipart/form-data">
 				<div class="subContainer">
 					<div class="mainMinorSubject">
 						<div class="categoryContainer">
@@ -173,17 +173,21 @@ article #boardWrite {
 					</div>
 				</div>
 				<div class="title">
-					<input type="text" name="boardTitle" id="boardTitle" placeholder="제목" maxlength="50" value="${board.boardTitle }">				
+					<input type="text" name="boardTitle" id="boardTitle" placeholder="제목" maxlength="50" value="${board.boardTitle }">					
 				</div>
 				<div class="content">
 					<div class="textareaContainer">
-						<textarea name="boardContent" id="summernote" maxlength="4000">${board.boardContent}</textarea>
+						<textarea name="boardContent" id="summernote" maxlength="4000">${board.boardContent }</textarea>
 					</div>
 				</div>
 				<div class="key">
-					<input type="text" name="key" id="key" placeholder=" 게시글 키" maxlength="20" value="${board.key }">
+					<input type="text" name="key" id="key" placeholder=" 게시글 키" maxlength="20" value="${board.key }">	
 				</div>
-				<input type="hidden" name="id" id="id" value="${pinfo.username }">
+				<sec:authorize access="isAuthenticated()">
+					<sec:authentication property="principal" var="pinfo" />
+					<input type="hidden" name="id" id="id" value="${pinfo.username}">
+					<input type="hidden" name="boardNum" value="${board.boardNum}" id="boardNum">
+				</sec:authorize>
 				<div class="button">
 					<button id="boardWrite">수정</button>
 				</div>

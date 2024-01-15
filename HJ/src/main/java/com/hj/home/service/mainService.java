@@ -7,31 +7,23 @@ import com.hj.home.DTO.BoardReply;
 
 public interface mainService {
 
-	List<Board> getProjectList(int index, String search_word, int page, int i);
+	List<Board> getProjectList(int page, int i);
 
-	List<Board> getProjectList(int page, int limit);
+	List<Board> getCsList(int page, int i);
 
+	List<Board> getCodingList(int page, int i);
+
+	List<Board> getStudyList(int page, int i);
+	
 	int getProjectListCount();
 
 	void setBoardViewUpdate(int num);
 
 	int getCsListCount();
 
-	List<Board> getCsList(int index, String search_word, int page, int i);
-
-	List<Board> getCsList(int page, int limit);
-
 	int getCodingListCount();
 
-	List<Board> getCodingList(int index, String search_word, int page, int i);
-
-	List<Board> getCodingList(int page, int limit);
-
 	int getStudyListCount();
-
-	List<Board> getStudyList(int index, String search_word, int page, int i);
-
-	List<Board> getStudyList(int page, int limit);
 	
 	Board getBoardDetail(int num);
 
@@ -56,8 +48,15 @@ public interface mainService {
 	int getCountDown(int num);
 
 	int getCountUp(int num);
+	
+	int updateBoard(Board board);
+	
+	int deleteBoard(int boardNum);
 
-	int boardUpdate(Board board);
+
+	
+
+	
 	
 	
 	

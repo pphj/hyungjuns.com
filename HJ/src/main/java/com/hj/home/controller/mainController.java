@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,50 +72,23 @@ public class mainController {
 		return p;
 	}
 	
-	@GetMapping(value="/project")						//프로젝트 게시글 리스트
+	@GetMapping(value="/project")								//프로젝트 게시글 리스트
 	public ModelAndView setProject(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
-			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
-																			ModelAndView mv) {
+			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
 		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
 		
-		List<Board> projectList = mainService.getProjectList(index, search_word, page, 10);
+		List<Board> projectList = mainService.getProjectList(page, 10);
 		
 		mv.addObject("page", page);
 		mv.addObject("maxpage", p.getMaxPage());		
 		mv.addObject("startpage", p.getStartPage());	
 		mv.addObject("endpage", p.getEndPage());		
 		mv.addObject("listcount", p.getListCount());
-		mv.addObject("search_field", index);
-		mv.addObject("search_word", search_word);
 		mv.addObject("projectList", projectList);				//해당 페이지의 글 목록 리스트
 		mv.addObject("limit", 10);
 		mv.setViewName("project/project");
 		return mv;
 		
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="/project_ajax")
-	public Map<String, Object> projectListAjax(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
-		
-		PaginationDTO p = calculatePagination(page, limit, mainService.getProjectListCount());
-		
-		List<Board> projectList = mainService.getProjectList(page, limit);	//리스트를 받아옴
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		map.put("page", page);
-		map.put("maxpage", p.getMaxPage());
-		map.put("startpage", p.getStartPage());
-		map.put("endpage", p.getEndPage());
-		map.put("listcount", p.getListCount());
-		map.put("projectList", projectList);				//해당 페이지의 글 목록 리스트
-		map.put("limit", limit);
-		
-		return map;
 	}
 	
 	@GetMapping("/project/{num}")
@@ -148,48 +122,21 @@ public class mainController {
 	
 	@GetMapping(value="/cs")							//cs 공부
 	public ModelAndView setCs(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
-			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
-																			ModelAndView mv) {
-		PaginationDTO p = calculatePagination(page, 10, mainService.getCsListCount());
+			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
 		
-		List<Board> csList = mainService.getCsList(index, search_word, page, 10);
+		List<Board> csList = mainService.getCsList(page, 10);
 		
 		mv.addObject("page", page);
 		mv.addObject("maxpage", p.getMaxPage());		
 		mv.addObject("startpage", p.getStartPage());	
 		mv.addObject("endpage", p.getEndPage());		
 		mv.addObject("listcount", p.getListCount());
-		mv.addObject("search_field", index);
-		mv.addObject("search_word", search_word);
 		mv.addObject("csList", csList);				//해당 페이지의 글 목록 리스트
 		mv.addObject("limit", 10);
 		mv.setViewName("cs/cs");
 		return mv;
 		
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="/cs_ajax")
-	public Map<String, Object> csListAjax(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
-		
-		PaginationDTO p = calculatePagination(page, limit, mainService.getCsListCount());
-		
-		List<Board> csList = mainService.getCsList(page, limit);	//리스트를 받아옴
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		map.put("page", page);
-		map.put("maxpage", p.getMaxPage());
-		map.put("startpage", p.getStartPage());
-		map.put("endpage", p.getEndPage());
-		map.put("listcount", p.getListCount());
-		map.put("csList", csList);				//해당 페이지의 글 목록 리스트
-		map.put("limit", limit);
-		
-		return map;
 	}
 	
 	@GetMapping("/cs/{num}")
@@ -203,12 +150,20 @@ public class mainController {
 		}
 		
 		Board csData = mainService.getBoardDetail(num);
+		
 		if (csData == null) {
 			logger.info("cs 상세보기 실패");
 			mv.addObject("url", request.getRequestURI());
 		}else {
 			logger.info("cs 상세보기 성공");
+			int countDown = mainService.getCountDown(num);
+			int countUp = mainService.getCountUp(num);
+			int count = mainService.getReplyListCount(num);
+			
+			mv.addObject("count", count);
 			mv.addObject("csData", csData);
+			mv.addObject("countDown", countDown);
+			mv.addObject("countUp", countUp);
 			mv.setViewName("detailView/csView");
 		}
 		return mv;
@@ -216,48 +171,21 @@ public class mainController {
 	
 	@GetMapping(value="/coding")						//코딩 풀이
 	public ModelAndView setCoding(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
-			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
-																			ModelAndView mv) {
-		PaginationDTO p = calculatePagination(page, 10, mainService.getCodingListCount());
+			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
 		
-		List<Board> codingList = mainService.getCodingList(index, search_word, page, 10);
+		List<Board> codingList = mainService.getCodingList(page, 10);
 		
 		mv.addObject("page", page);
 		mv.addObject("maxpage", p.getMaxPage());		
 		mv.addObject("startpage", p.getStartPage());	
 		mv.addObject("endpage", p.getEndPage());		
 		mv.addObject("listcount", p.getListCount());
-		mv.addObject("search_field", index);
-		mv.addObject("search_word", search_word);
 		mv.addObject("codingList", codingList);				//해당 페이지의 글 목록 리스트
 		mv.addObject("limit", 10);
 		mv.setViewName("coding/coding");
 		return mv;
 		
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="/coding_ajax")
-	public Map<String, Object> codingListAjax(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
-		
-		PaginationDTO p = calculatePagination(page, limit, mainService.getCodingListCount());
-		
-		List<Board> codingList = mainService.getCodingList(page, limit);	//리스트를 받아옴
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		map.put("page", page);
-		map.put("maxpage", p.getMaxPage());
-		map.put("startpage", p.getStartPage());
-		map.put("endpage", p.getEndPage());
-		map.put("listcount", p.getListCount());
-		map.put("codingList", codingList);				//해당 페이지의 글 목록 리스트
-		map.put("limit", limit);
-		
-		return map;
 	}
 	
 	@GetMapping("/coding/{num}")
@@ -284,48 +212,21 @@ public class mainController {
 	
 	@GetMapping(value="/study")							//정처리 공부
 	public ModelAndView setStudy(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="search_field", defaultValue="-1", required=false) int index,
-			@RequestParam(value="search_word", defaultValue="", required=false) String search_word,
-																			ModelAndView mv) {
-		PaginationDTO p = calculatePagination(page, 10, mainService.getStudyListCount());
+			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
+		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
 		
-		List<Board> studyList = mainService.getStudyList(index, search_word, page, 10);
+		List<Board> studyList = mainService.getStudyList(page, 10);
 		
 		mv.addObject("page", page);
 		mv.addObject("maxpage", p.getMaxPage());		
 		mv.addObject("startpage", p.getStartPage());	
 		mv.addObject("endpage", p.getEndPage());		
 		mv.addObject("listcount", p.getListCount());
-		mv.addObject("search_field", index);
-		mv.addObject("search_word", search_word);
 		mv.addObject("studyList", studyList);				//해당 페이지의 글 목록 리스트
 		mv.addObject("limit", 10);
 		mv.setViewName("study/study");
 		return mv;
 		
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="/study_ajax")
-	public Map<String, Object> studyListAjax(
-			@RequestParam(value="page", defaultValue="1", required=false) int page,
-			@RequestParam(value="limit", defaultValue="10", required=false) int limit){
-		
-		PaginationDTO p = calculatePagination(page, limit, mainService.getStudyListCount());
-		
-		List<Board> studyList = mainService.getStudyList(page, limit);	//리스트를 받아옴
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		map.put("page", page);
-		map.put("maxpage", p.getMaxPage());
-		map.put("startpage", p.getStartPage());
-		map.put("endpage", p.getEndPage());
-		map.put("listcount", p.getListCount());
-		map.put("studyList", studyList);				//해당 페이지의 글 목록 리스트
-		map.put("limit", limit);
-		
-		return map;
 	}
 	
 	@GetMapping("/study/{num}")
@@ -473,12 +374,14 @@ public class mainController {
 		mv.addObject("board", board);
 		mv.setViewName("write/updateBoard");
 		return mv;
+		
 	}
 	
 	
-	@PostMapping(value="/boardUpdate")
-	public String boardUpdate(Board board, RedirectAttributes ra) throws Exception {			//게시글 수정
-		int result = mainService.boardUpdate(board);
+	@PostMapping(value="/updateBoard")
+	public String updateBoard(Board board, RedirectAttributes ra) throws Exception {			//게시글 수정
+		int result = mainService.updateBoard(board);
+		
 		logger.info(board.toString());
 		String url = "";
 		
@@ -491,8 +394,24 @@ public class mainController {
 			
 			url = "redirect:main";
 		}
+		
 		return url;
 		
+	}
+	
+	
+	@PostMapping(value="/deleteBoard")
+	public String deleteBoard(@RequestParam int boardNum, Model mv, RedirectAttributes ra, HttpServletRequest request) {			//게시글 삭제
+		int result = mainService.deleteBoard(boardNum);
+		
+		if (result == 0) {
+			logger.info("게시글 삭제 실패");
+			return "error/error";
+		}
+		logger.info("게시글 삭제 성공");
+		ra.addFlashAttribute("result", "deleteSuccess");
+		
+		return "redirect:/.com/main";
 	}
 	
 }

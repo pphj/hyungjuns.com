@@ -14,8 +14,12 @@ import com.hj.home.DTO.BoardReply;
 public interface mainMapper {
 
 	List<Board> getProjectList(HashMap<String, Integer> list);
-	
-	List<Board> getProjectList2(Map<String, Object> list);
+
+	List<Board> getCsList(HashMap<String, Integer> list);
+
+	List<Board> getCodingList(HashMap<String, Integer> list);
+
+	List<Board> getStudyList(HashMap<String, Integer> list);
 	
 	int getProjectListCount();
 	
@@ -23,21 +27,9 @@ public interface mainMapper {
 
 	int getCsListCount();
 
-	List<Board> getCsList(HashMap<String, Integer> list);
-
-	List<Board> getCsList2(Map<String, Object> list);
-
 	int getCodingListCount();
 
-	List<Board> getCodingList(HashMap<String, Integer> list);
-
-	List<Board> getCodingList2(Map<String, Object> list);
-
 	int getStudyListCount();
-
-	List<Board> getStudyList(HashMap<String, Integer> list);
-
-	List<Board> getStudyList2(Map<String, Object> list);
 	
 	Board getBoardDetail(int num);
 
@@ -71,7 +63,9 @@ public interface mainMapper {
 
 	int getCountUp(int num);
 
-	int boardUpdate(Board board);
+	int updateBoard(Board board);
+
+	int deleteBoard(int boardNum);
 
 	
 

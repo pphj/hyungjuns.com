@@ -32,8 +32,14 @@ public class SecurityConfig  {
 		http.authenticationProvider(adminAuthencationProvider());
 		http.antMatcher("/.com/**")
 			.authorizeRequests(authorizeRequests -> authorizeRequests
-					.antMatchers("/resources/**").permitAll()
 					.antMatchers("/.com/**").permitAll()
+					.antMatchers("/resources/**").permitAll()
+					.antMatchers("/.com/project/**").permitAll()
+					.antMatchers("/.com/coding/**").permitAll()
+					.antMatchers("/.com/cs/**").permitAll()
+					.antMatchers("/.com/study/**").permitAll()
+					.antMatchers("/.com/project_ajax/**").permitAll()
+					
 			)
 			.formLogin(formLogin -> formLogin
 	                .loginPage("/")

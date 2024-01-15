@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -167,8 +166,16 @@ article #boardWrite {
 								<option>파이널 프로젝트</option>
 								<option>개인 프로젝트</option>
 								<option>CS 공부</option>
+								<option>데이터베이스</option>
+								<option>자바</option>
+								<option>Web</option>
+								<option>언어</option>
 								<option>코딩 풀이</option>
 								<option>정보처리기사</option>
+								<option>공부일기</option>
+								<option>필기</option>
+								<option>실기</option>
+								<option>기타</option>
 							</select>
 						</div>
 					</div>
@@ -184,7 +191,10 @@ article #boardWrite {
 				<div class="key">
 					<input type="text" name="key" id="key" placeholder=" 게시글 키" maxlength="20">	
 				</div>
-				<input type="hidden" name="id" id="id" value="${pinfo.username}">
+				<sec:authorize access="isAuthenticated()">
+					<sec:authentication property="principal" var="pinfo" />
+					<input type="hidden" name="id" id="id" value="${pinfo.username}">
+				</sec:authorize>
 				<div class="button">
 					<button id="boardWrite">등록</button>
 				</div>

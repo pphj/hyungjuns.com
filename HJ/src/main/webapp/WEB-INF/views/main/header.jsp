@@ -18,9 +18,15 @@
 	});
 </script>
 <style>
+@font-face {
+	font-family: 'godic';
+	src: url('${pageContext.request.contextPath}/font/godic.ttf') format('truetype');
+}
+
 body {
 	display: flex;
 	flex-direction: column;
+	font-family: 'godic', sans-serif;
 	font-size: 14px;
 	line-height: normal;
 	color: black;
@@ -67,7 +73,8 @@ header {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: green;
+	background-color: #ACA9BB;
+	height: 65px;
 }
 
 nav {
@@ -88,6 +95,10 @@ nav > ul {
 nav > ul > li {
 	position: relative;
     flex: 0 0 auto;
+}
+
+nav ul li a {
+	font-size: 18px;
 }
 
 ul {
@@ -162,8 +173,8 @@ div {
 				<li>
 					<div class='loginContainer'>
 						<form action="${pageContext.request.contextPath}/.com/loginProcess" method="post" name="login">
-							<input type='text' class='dropdown-item' id='id' name='id' placeholder="아이디">
-							<input type='text' class='dropdown-item' id='pw' name='pw' placeholder="비밀번호">
+							<input type='text' class='dropdown-item' id='id' name='id' placeholder=" 아이디">
+							<input type='text' class='dropdown-item' id='pw' name='pw' placeholder=" 비밀번호">
 							<button type="submit" class="loginSubmit">로그인</button>
 							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 						</form>
@@ -184,7 +195,7 @@ div {
 		<section id="main">
 			<div class="logo">
 				<a href="${pageContext.request.contextPath}/.com/main">
-					<img alt="형준닷컴" src="${pageContext.request.contextPath}/resources/image/logo.png" style="width:400px;height: 80px;
+					<img alt="형준닷컴" src="${pageContext.request.contextPath}/resources/image/logo.jpg" style="width:400px;height: 80px;
 					margin: 10px 0px 0px 0px;">
 				</a>
 			</div>
