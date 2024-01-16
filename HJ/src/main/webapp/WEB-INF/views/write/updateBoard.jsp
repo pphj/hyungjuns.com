@@ -166,8 +166,16 @@ article #boardWrite {
 								<option>파이널 프로젝트</option>
 								<option>개인 프로젝트</option>
 								<option>CS 공부</option>
+								<option>데이터베이스</option>
+								<option>자바</option>
+								<option>Web</option>
+								<option>언어</option>
 								<option>코딩 풀이</option>
 								<option>정보처리기사</option>
+								<option>공부일기</option>
+								<option>필기</option>
+								<option>실기</option>
+								<option>기타</option>
 							</select>
 						</div>
 					</div>
