@@ -29,7 +29,7 @@ public class AdminAccessDeniedHandler implements AccessDeniedHandler {
 		
 		String alertMessage = "접근 권한이 없습니다.";
 		alertMessage = alertMessage.replace("+", " ");
-        String script = "<script>alert(decodeURIComponent('" + alertMessage + "')); window.location.href='" + request.getContextPath() + "/.com/main';</script>";
+        String script = "<script>alert(decodeURIComponent('" + alertMessage + "')); window.location.href='" + request.getContextPath() + "/page/main';</script>";
 
         response.setContentType("text/html; charset=UTF-8");
         response.getWriter().write(script);

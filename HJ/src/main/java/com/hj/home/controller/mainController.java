@@ -37,7 +37,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Controller
-@RequestMapping(value=".com")
+@RequestMapping(value="page")
 public class mainController {
 	private static final Logger logger = LoggerFactory.getLogger(mainController.class);
 	
@@ -123,7 +123,7 @@ public class mainController {
 	@GetMapping(value="/cs")							//cs 공부
 	public ModelAndView setCs(
 			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
-		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
+		PaginationDTO p = calculatePagination(page, 10, mainService.getCsListCount());
 		
 		List<Board> csList = mainService.getCsList(page, 10);
 		
@@ -172,7 +172,7 @@ public class mainController {
 	@GetMapping(value="/coding")						//코딩 풀이
 	public ModelAndView setCoding(
 			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
-		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
+		PaginationDTO p = calculatePagination(page, 10, mainService.getCodingListCount());
 		
 		List<Board> codingList = mainService.getCodingList(page, 10);
 		
@@ -213,7 +213,7 @@ public class mainController {
 	@GetMapping(value="/study")							//정처리 공부
 	public ModelAndView setStudy(
 			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
-		PaginationDTO p = calculatePagination(page, 10, mainService.getProjectListCount());
+		PaginationDTO p = calculatePagination(page, 10, mainService.getStudyListCount());
 		
 		List<Board> studyList = mainService.getStudyList(page, 10);
 		
@@ -354,7 +354,7 @@ public class mainController {
 	@RequestMapping(value="/logout")
 	public String logout(HttpSession session) {			//로그아웃
 		session.invalidate();
-		return "redirect:/.com/main";
+		return "redirect:/page/main";
 	}
 	
 	
@@ -411,7 +411,7 @@ public class mainController {
 		logger.info("게시글 삭제 성공");
 		ra.addFlashAttribute("result", "deleteSuccess");
 		
-		return "redirect:/.com/main";
+		return "redirect:/page/main";
 	}
 	
 }

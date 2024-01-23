@@ -30,7 +30,7 @@ public class AdminLoginSuccessHandler implements AuthenticationSuccessHandler {
 		Admin id = dao.adminId(authentication.getName());
 		
 		if (id != null) {
-			String url = request.getContextPath() + "/.com/main";
+			String url = request.getContextPath() + "/page/main";
 			response.sendRedirect(url);
 		}
 		

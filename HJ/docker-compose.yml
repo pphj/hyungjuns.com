@@ -16,11 +16,12 @@ services:
     container_name: web
     image: parkhj0209/hyungjuns.com
     ports:
-      - '9400:9400'
+      - '80:80'
     environment:
-      spring.datasource.url: jdbc:oracle:thin:@oracle:1521:xe
-      spring.datasource.hikari.data-source-properties.oracle.jdbc.timezoneAsRegion: "Asia/Seoul"
-      spring.datasource.password: hj
+      SPRING_DATASOURCE_URL: jdbc:mysql://43.203.174.44:3306/hj
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: [password]
+      restart: always
     networks: 
       - test2
     depends_on:

@@ -14,7 +14,7 @@ public class Board {
     private Date creDate;
     private Date modiDate;
     private int boardView;
-    private String key;
+    private String boardKey;
     private String boardState;
     private int replyCount;
     

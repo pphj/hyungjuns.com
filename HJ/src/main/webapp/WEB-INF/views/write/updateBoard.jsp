@@ -152,11 +152,11 @@ article #boardWrite {
 </style>
 </head>
 <body>
-	<jsp:include page="../main/header.jsp"/>
+	<jsp:include page="../main/navbar.jsp"/>
 	<main>
 		<article>
 			<h1>글쓰기</h1>
-			<form action="${pageContext.request.contextPath}/.com/updateBoard" method="post" enctype="multipart/form-data">
+			<form action="${pageContext.request.contextPath}/page/updateBoard" method="post" enctype="multipart/form-data">
 				<div class="subContainer">
 					<div class="mainMinorSubject">
 						<div class="categoryContainer">
@@ -189,7 +189,7 @@ article #boardWrite {
 					</div>
 				</div>
 				<div class="key">
-					<input type="text" name="key" id="key" placeholder=" 게시글 키" maxlength="20" value="${board.key }">	
+					<input type="text" name="boardKey" id="key" placeholder=" 게시글 키" maxlength="20" value="${board.boardKey }">	
 				</div>
 				<sec:authorize access="isAuthenticated()">
 					<sec:authentication property="principal" var="pinfo" />

@@ -30,28 +30,22 @@ public class SecurityConfig  {
 	@Bean
 	public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authenticationProvider(adminAuthencationProvider());
-		http.antMatcher("/.com/**")
+		http.antMatcher("/page/**")
 			.authorizeRequests(authorizeRequests -> authorizeRequests
-					.antMatchers("/.com/**").permitAll()
+					.antMatchers("/page/**").permitAll()
 					.antMatchers("/resources/**").permitAll()
-					.antMatchers("/.com/project/**").permitAll()
-					.antMatchers("/.com/coding/**").permitAll()
-					.antMatchers("/.com/cs/**").permitAll()
-					.antMatchers("/.com/study/**").permitAll()
-					.antMatchers("/.com/project_ajax/**").permitAll()
-					
 			)
 			.formLogin(formLogin -> formLogin
 	                .loginPage("/")
-	                .loginProcessingUrl("/.com/loginProcess")
+	                .loginProcessingUrl("/page/loginProcess")
 	                .usernameParameter("id")
 	                .passwordParameter("pw")
 	                .successHandler(adminLoginSuccessHandler())
 	                .failureHandler(adminLoginFailHandler())
 	        )
 	        .logout(logout -> logout
-	                .logoutSuccessUrl("/.com/main")
-	                .logoutUrl("/.com/logout")
+	                .logoutSuccessUrl("/page/main")
+	                .logoutUrl("/page/logout")
 	                .invalidateHttpSession(true)
 	                .deleteCookies("JSESSION_ID")
 	        );

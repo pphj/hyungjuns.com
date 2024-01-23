@@ -27,7 +27,7 @@ public class AdminLoginFailHandler implements AuthenticationFailureHandler {
 		//해결하기 위해 controller의 login에서 세션값을 지워준다
 		session.setAttribute("loginfail", "loginFailMsg");
 		
-		String url = request.getContextPath() + "/.com/main";
+		String url = request.getContextPath() + "/page/main";
 		response.sendRedirect(url);
 		
 	}

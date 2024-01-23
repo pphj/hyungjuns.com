@@ -6,17 +6,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <title>형준닷컴</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="" name="keywords">
+<meta content="" name="description">
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+        
+<!-- Icon Font Stylesheet -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://kit.fontawesome.com/2432d5047b.js" crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+<!-- Libraries Stylesheet -->
+<link href="${pageContext.request.contextPath}/resources/lib/animate/animate.min.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/resources/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+
+
+<!-- Customized Bootstrap Stylesheet -->
+<link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Template Stylesheet -->
+<link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
 <script>
 	$(document).ready(function(){
 		$('.projectWbtn').click(function () {
-			location.href = "${pageContext.request.contextPath}/.com/write";
+			location.href = "${pageContext.request.contextPath}/page/write";
 		});
 	})
 </script>
@@ -43,6 +60,10 @@ main {
 	margin: auto;
 }
 
+#menuCs > a {
+	color: #E1FFFA !important;
+}
+
 #board {
 	box-sizing: border-box;
 	width: 100%;
@@ -51,7 +72,7 @@ main {
 }
 
 #board > a {
-	background-color: #E1FFFA;
+	background-color: #f4f4f4;
 	text-decoration: none;
 }
 
@@ -261,10 +282,13 @@ main {
     border: none;
 }
 
+#csGo {
+	color: #fd5d5d !important;
+}
 </style>
 </head>
 <body>
-	<jsp:include page="../main/header.jsp"/>
+	<jsp:include page="../main/navbar.jsp"/>
 	<main>
 		<br>
 		<br>
@@ -274,7 +298,7 @@ main {
 			<c:if test="${listcount > 0}">
 				<c:set var="num" value="${listcount-(page-1)*limit}" />
 				<c:forEach var="F" items="${csList}">
-					<a class="item" href="${pageContext.request.contextPath}/.com/cs/${F.boardNum}">
+					<a class="item" href="${pageContext.request.contextPath}/page/cs/${F.boardNum}">
 						<div class="info">
 							<div class="titleContainer">
 								<span class="category">${F.cateName }</span>

@@ -1,6 +1,5 @@
 package com.hj.home;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -29,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer{
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		//url mapping "/"로 접속하면 "/main/main"로 이동
-		registry.addViewController("/").setViewName("forward:.com/main");
+		registry.addViewController("/").setViewName("forward:page/main");
 	}
 	
 	//정적 리소스 핸들러 등록을 하고, 그 리소스들의 위치를 담은 상수 값을 매개변수로 가지는

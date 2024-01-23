@@ -6,13 +6,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8">
 <title>형준닷컴</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="" name="keywords">
+<meta content="" name="description">
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+        
+<!-- Icon Font Stylesheet -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://kit.fontawesome.com/2432d5047b.js" crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+<!-- Libraries Stylesheet -->
+<link href="${pageContext.request.contextPath}/resources/lib/animate/animate.min.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/resources/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+
+
+<!-- Customized Bootstrap Stylesheet -->
+<link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Template Stylesheet -->
+<link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
 <script>
 	var url = "";
 	var data = {};
@@ -67,14 +84,20 @@
 	    
 	    $('#replys').on('click', '.removeCheck', function () {		//삭제 확인버튼 클릭시
 	    	var replyNum = $(this).closest('.replyWrapper').find('#replyNum').val();
+	    	var replyRef = $(this).closest('.right').find("#replyRef").val();
+			var replyLev = $(this).closest('.replyWrapper').find("#replyLev").val();
+			var replySeq = $(this).closest('.replyWrapper').find("#replySeq").val();
 	    	var boardNum = $("#boardNum").val();
 	    	var deletePass = $(this).closest('.replyWrapper').find("#removePass").val();
-	    	console.log(deletePass);
+	    	
 	    	url = "../replyDelete";
 			data = {
 				"replyNum": replyNum,
 				"boardNum": boardNum,
-				"deletePass": deletePass
+				"deletePass": deletePass,
+				"replyRef": replyRef,
+				"replyLev": replyLev,
+				"replySeq": replySeq
 			};
 			
 			if (deletePass === "") {
@@ -1081,13 +1104,13 @@ span {
 </style>
 </head>
 <body>
-	<jsp:include page="../main/header.jsp"/>
+	<jsp:include page="../main/navbar.jsp"/>
 	<main>
 		<input type="hidden" name="num" value="${studyData.boardNum}" id="boardNum">
 		<article id="article">
 				<div class="sub">
 					<div class="back">
-						<a href="${pageContext.request.contextPath}/.com/study"><i class="fa-solid fa-arrow-left-long"></i> 뒤로</a>
+						<a href="${pageContext.request.contextPath}/page/study"><i class="fa-solid fa-arrow-left-long"></i> 뒤로</a>
 					</div>
 				</div>
 				<div class="item">
@@ -1128,19 +1151,19 @@ span {
 						<div class="left">
 							<div class="button">
 								<c:if test="${countDown != 0}">
-									<a href="${pageContext.request.contextPath}/.com/study/${countDown}">이전 글</a>
+									<a href="${pageContext.request.contextPath}/page/study/${countDown}">이전 글</a>
 								</c:if>
 							</div>
 						</div>
 						<div class="center">
 							<div class="button">
-								<a href="${pageContext.request.contextPath}/.com/study">목록</a>
+								<a href="${pageContext.request.contextPath}/page/study">목록</a>
 							</div>
 						</div>
 						<div class="right">
 							<div class="button">
 								<c:if test="${countUp != 0}">
-									<a href="${pageContext.request.contextPath}/.com/study/${countUp}">다음 글</a>
+									<a href="${pageContext.request.contextPath}/page/study/${countUp}">다음 글</a>
 								</c:if>
 							</div>
 						</div>
@@ -1177,13 +1200,13 @@ span {
 					<div class="listAndEdit">
 						<div class="left">
 							<div class="button">
-								<a href="${pageContext.request.contextPath}/.com/study">목록</a>
+								<a href="${pageContext.request.contextPath}/page/study">목록</a>
 							</div>
 						</div>
 						<div class="right">
 							<sec:authorize access="isAuthenticated()">
 							<div class="button">
-								<a href="${pageContext.request.contextPath}/.com/updateBoard/${studyData.boardNum}">수정</a>
+								<a href="${pageContext.request.contextPath}/page/updateBoard/${studyData.boardNum}">수정</a>
 							</div>
 							<div class="deleteBoardButton">
 								<a href="#">삭제</a>
@@ -1199,7 +1222,7 @@ span {
  				<div class="modal-dialog">
  					<div class="modal-content">
  						<div class="modal-body">	<%-- 모달 바디 --%>
- 							<form name="deleteBoardForm" action="${pageContext.request.contextPath}/.com/deleteBoard" method="post">
+ 							<form name="deleteBoardForm" action="${pageContext.request.contextPath}/page/deleteBoard" method="post">
  								<input type="hidden" name="boardNum" value="${projectData.boardNum}" id="boardNum">
  								<button type="submit" class="btn btn-primary">삭제</button>
  								<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
