@@ -24,10 +24,10 @@ public class AdminAccessDeniedHandler implements AccessDeniedHandler {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String userAuthorities = authentication.getAuthorities().toString();
 		
-	    logger.info("í˜„ì¬ ì‚¬ìš©ìì˜ ê¶Œí•œ: " + userAuthorities);
-		logger.error("Admin Access Denied : ì ‘ê·¼ ê¶Œí•œì´ ì—†ìŠµë‹ˆë‹¤.");
+		logger.info("ÇöÀç »ç¿ëÀÚÀÇ ±ÇÇÑ: " + userAuthorities);
+		logger.error("Admin Access Denied : Á¢±Ù ±ÇÇÑÀÌ ¾ø½À´Ï´Ù.");
 		
-		String alertMessage = "ì ‘ê·¼ ê¶Œí•œì´ ì—†ìŠµë‹ˆë‹¤.";
+		String alertMessage = "Á¢±Ù ±ÇÇÑÀÌ ¾ø½À´Ï´Ù.";
 		alertMessage = alertMessage.replace("+", " ");
         String script = "<script>alert(decodeURIComponent('" + alertMessage + "')); window.location.href='" + request.getContextPath() + "/page/main';</script>";
 

@@ -6,9 +6,9 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
 
-//ë³„ë„ì˜ êµ¬í˜„ì—†ì´ í´ë˜ìŠ¤ë¥¼ ì¶”ê°€, ë‚´ë¶€ì ìœ¼ë¡œ Delegaing FilterProxyë¥¼ ìŠ¤í”„ë§ì— ë“±ë¡
+//º°µµÀÇ ±¸Çö¾øÀÌ Å¬·¡½º¸¦ Ãß°¡, ³»ºÎÀûÀ¸·Î Delegaing FilterProxy¸¦ ½ºÇÁ¸µ¿¡ µî·Ï
 public class SecurityInitializer extends AbstractSecurityWebApplicationInitializer{
-	//ì‹œíë¦¬í‹° í•„í„° ì•ì— ë†“ì„ í•„í„°ë“¤ì„ ì°¨ë¡€ëŒ€ë¡œ ì¶”ê°€
+	//½ÃÅ¥¸®Æ¼ ÇÊÅÍ ¾Õ¿¡ ³õÀ» ÇÊÅÍµéÀ» Â÷·Ê´ë·Î Ãß°¡
 	@Override
 	protected void beforeSpringSecurityFilterChain(ServletContext servletContext) {
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();

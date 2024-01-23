@@ -18,12 +18,12 @@ public class AdminUserDetailService implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	    logger.info("ê´€ë¦¬ì ë¡œê·¸ì¸ì‹œ ì…ë ¥í•œ ê°’: " + username);
+		logger.info("°ü¸®ÀÚ ·Î±×ÀÎ½Ã ÀÔ·ÂÇÑ °ª: " + username);
 	    Admin id = dao.adminId(username);
 
 	    if (id == null) {
 	    	throw new UsernameNotFoundException(
-	    			"ë¡œê·¸ì¸ ì•„ì´ë””: " + username + " ê´€ë¦¬ì ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+	    			"·Î±×ÀÎ ¾ÆÀÌµğ: " + username + " °ü¸®ÀÚ Á¤º¸¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
 	    }
 
 	    return id;

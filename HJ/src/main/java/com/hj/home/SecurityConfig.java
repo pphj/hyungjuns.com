@@ -55,7 +55,7 @@ public class SecurityConfig  {
 			return http.build();
 	}
 	
-	@Bean						//ê´€ë¦¬ì
+	@Bean						//°èÁ¤ ÀÎÁõ
 	public DaoAuthenticationProvider adminAuthencationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setUserDetailsService(adminDetailService());
@@ -73,30 +73,30 @@ public class SecurityConfig  {
 	
 	
 	@Bean
-	public AdminAccessDeniedHandler adminAccessDeniedHandler() {		//ê´€ë¦¬ì ì ‘ì† ì œí•œ
+	public AdminAccessDeniedHandler adminAccessDeniedHandler() {		//°ü¸®ÀÚ Á¢¼Ó Á¦ÇÑ
 		return new AdminAccessDeniedHandler();
 	}
 	
 	
 	@Bean
-	public AuthenticationSuccessHandler adminLoginSuccessHandler() {	//ê´€ë¦¬ì ë¡œê·¸ì¸ ì„±ê³µ
+	public AuthenticationSuccessHandler adminLoginSuccessHandler() {	//°ü¸®ÀÚ ·Î±×ÀÎ ¼º°ø
 		return new AdminLoginSuccessHandler();
 	}
 	
 	
 	@Bean
-	public AuthenticationFailureHandler adminLoginFailHandler() {	//ê´€ë¦¬ì ë¡œê·¸ì¸ ì‹¤íŒ¨
+	public AuthenticationFailureHandler adminLoginFailHandler() {	//°ü¸®ÀÚ ·Î±×ÀÎ ½ÇÆĞ
 		return new AdminLoginFailHandler();
 	}
 	
 	
 	@Bean
-	public UserDetailsService adminDetailService() {				//ê´€ë¦¬ì ë°ì´í„°
+	public UserDetailsService adminDetailService() {				//°ü¸®ÀÚ µ¥ÀÌÅÍ
 		return new AdminUserDetailService();
 	}
 	
 	@Bean
-	public BCryptPasswordEncoder encodePassword() {			//ë¹„ë°€ë²ˆí˜¸ ì¸ì½”ë”
+	public BCryptPasswordEncoder encodePassword() {			//ºñ¹Ğ¹øÈ£ ÀÎÄÚ´õ
 		return new BCryptPasswordEncoder();
 	}
 	

@@ -20,7 +20,7 @@ public class mainServiceImpl implements mainService {
 		this.dao = dao;
 	}
 	
-	//ë¦¬ìŠ¤íŠ¸ ê³µí†µ ì‚¬ìš© ë©”ì†Œë“œ
+	//¸®½ºÆ® °øÅë »ç¿ë ¸Þ¼Òµå
 	public HashMap<String, Integer> listLogic (int page, int limit) {
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		int startrow = (page - 1) * limit + 1;
@@ -31,7 +31,7 @@ public class mainServiceImpl implements mainService {
 		return map;
 	}
 	
-	//ê²€ìƒ‰ ë¦¬ìŠ¤íŠ¸ ê³µí†µ ë©”ì†Œë“œ
+	//°Ë»ö ¸®½ºÆ® °øÅë ¸Þ¼Òµå
 	public Map<String, Object> listLogic_Search(int index, String search_word, int page, int limit, String[] searchField) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (index != -1) {

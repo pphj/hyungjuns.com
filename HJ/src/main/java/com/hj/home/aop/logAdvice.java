@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 public class logAdvice {
 private static final Logger logger = LoggerFactory.getLogger(logAdvice.class);
 	
-	//LogAdvicd í´ë˜ìŠ¤ì˜ ê³µí†µ ë©”ì†Œë“œë¥¼ aopì—ì„œ Adviceë¼ê³  í•œë‹¤
+//LogAdvicd Å¬·¡½ºÀÇ °øÅë ¸Ş¼Òµå¸¦ aop¿¡¼­ Advice¶ó°í ÇÑ´Ù
 	public void beforeLog() {
-		logger.info("[LogAdvice : ê³µí†µ ë©”ì†Œë“œ ì…ë‹ˆë‹¤.]");
+		logger.info("[LogAdvice : °øÅë ¸Ş¼Òµå ÀÔ´Ï´Ù.]");
 	}
 }

@@ -5,8 +5,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//ìŠ¤í”„ë§ ë¶€íŠ¸ì˜ ì›¹ MVC ë¥¼ êµ¬ìƒí•˜ëŠ” ì—­í• ì„ í•˜ëŠ” WebMvcConfig í´ë˜ìŠ¤
-//ë·° ì»¨íŠ¸ë¡¤ëŸ¬ ë“±ë¡ ë° ì •ì  ë¦¬ì†ŒìŠ¤ë“¤ì˜ í•¸ë“¤ëŸ¬ ë“±ë¡ì„ í•´ íƒìƒ‰í•˜ëŠ” ì—­í• ì„ í•œë‹¤
+//½ºÇÁ¸µ ºÎÆ®ÀÇ À¥ MVC ¸¦ ±¸»óÇÏ´Â ¿ªÇÒÀ» ÇÏ´Â WebMvcConfig Å¬·¡½º
+//ºä ÄÁÆ®·Ñ·¯ µî·Ï ¹× Á¤Àû ¸®¼Ò½ºµéÀÇ ÇÚµé·¯ µî·ÏÀ» ÇØ Å½»öÇÏ´Â ¿ªÇÒÀ» ÇÑ´Ù
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer{
 
@@ -27,15 +27,15 @@ public class WebMvcConfig implements WebMvcConfigurer{
 	
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		//url mapping "/"ë¡œ ì ‘ì†í•˜ë©´ "/main/main"ë¡œ ì´ë™
+		//url mapping "/"·Î Á¢¼ÓÇÏ¸é "/main/main"·Î ÀÌµ¿
 		registry.addViewController("/").setViewName("forward:page/main");
 	}
 	
-	//ì •ì  ë¦¬ì†ŒìŠ¤ í•¸ë“¤ëŸ¬ ë“±ë¡ì„ í•˜ê³ , ê·¸ ë¦¬ì†ŒìŠ¤ë“¤ì˜ ìœ„ì¹˜ë¥¼ ë‹´ì€ ìƒìˆ˜ ê°’ì„ ë§¤ê°œë³€ìˆ˜ë¡œ ê°€ì§€ëŠ”
-	//ë©”ì„œë“œë¥¼ ì˜¤ë²„ë¼ì´ë”©í•´ íƒìƒ‰í•˜ëŠ” ì—­í• ì„ í•œë‹¤.
+	//Á¤Àû ¸®¼Ò½º ÇÚµé·¯ µî·ÏÀ» ÇÏ°í, ±× ¸®¼Ò½ºµéÀÇ À§Ä¡¸¦ ´ãÀº »ó¼ö °ªÀ» ¸Å°³º¯¼ö·Î °¡Áö´Â
+		//¸Ş¼­µå¸¦ ¿À¹ö¶óÀÌµùÇØ Å½»öÇÏ´Â ¿ªÇÒÀ» ÇÑ´Ù.
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		//   /static/ ë˜ëŠ” /templates/ ê²½ë¡œì˜ resourcesì— ì •ì  ë¦¬ì†ŒìŠ¤ë“¤ì´ ìˆë‹¤ê³  ì„¤ì •ë˜ì–´ìˆë‹¤.
+	//   /static/ ¶Ç´Â /templates/ °æ·ÎÀÇ resources¿¡ Á¤Àû ¸®¼Ò½ºµéÀÌ ÀÖ´Ù°í ¼³Á¤µÇ¾îÀÖ´Ù.
 		registry.addResourceHandler("/resources/**")
 		.addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
 //		registry.addResourceHandler("/upload/**")

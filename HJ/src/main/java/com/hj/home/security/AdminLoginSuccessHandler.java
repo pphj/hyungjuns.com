@@ -25,7 +25,7 @@ public class AdminLoginSuccessHandler implements AuthenticationSuccessHandler {
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		
-		logger.info("AdminLoginSuceessHandler ì„±ê³µ, ì•„ì´ë”” : " + authentication.getName());
+		logger.info("AdminLoginSuceessHandler ¼º°ø, ¾ÆÀÌµğ : " + authentication.getName());
 		
 		Admin id = dao.adminId(authentication.getName());
 		

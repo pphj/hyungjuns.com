@@ -210,7 +210,7 @@ public class mainController {
 		return mv;
 	}
 	
-	@GetMapping(value="/study")							//정처리 공부
+	@GetMapping(value="/study")							//정처기 공부
 	public ModelAndView setStudy(
 			@RequestParam(value="page", defaultValue="1", required=false) int page, ModelAndView mv) {
 		PaginationDTO p = calculatePagination(page, 10, mainService.getStudyListCount());
@@ -252,7 +252,7 @@ public class mainController {
 	}
 	
 	@ResponseBody
-	@PostMapping(value="/replyList")					//boardNum -> reply.js 의 data값과 맞춰줘야한다
+	@PostMapping(value="/replyList")					// data값과 맞춰줘야한다
 	public Map<String, Object> qnaReplyList(int boardNum, int page) {
 		List<BoardReply> list = mainService.getReplyList(boardNum, page);
 		int listcount = mainService.getReplyListCount(boardNum);
@@ -268,10 +268,10 @@ public class mainController {
 	public int replyInsertAndUpdateReplyCount(BoardReply BoardReply) {			//댓글 등록
 		try {
 	        mainService.replyInsertAndUpdateReplyCount(BoardReply);
-	        return 1; 				// 성공
+	        return 1; 				//성공
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return 0; 				// 실패
+	        return 0; 				//실패
 	    }
 	}
 	
@@ -309,10 +309,10 @@ public class mainController {
 	public int reReplyInsertAndUpdateReplyCount(BoardReply BoardReply) {		//대댓글 등록
 		try {
 	        mainService.reReplyInsertAndUpdateReplyCount(BoardReply);
-	        return 1; 				// 성공
+	        return 1; 				//성공
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return 0; 				// 실패
+	        return 0; 				//실패
 	    }
 	}
 	
