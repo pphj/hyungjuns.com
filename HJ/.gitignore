@@ -19,7 +19,6 @@
 ### Java ###
 # Compiled class file
 *.class
-*.xml
 *.MF
 
 # Log file
