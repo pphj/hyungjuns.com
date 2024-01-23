@@ -163,56 +163,48 @@
 	</select>
 	
 	<select id="getReplyList" parameterType="map" resultType="BoardReply">
-		select * from(select rownum rnum, r.*
-					  from( select replyNum, boardNum, replyWriter, replyPass,
-					  	    replyContent, replyRef, replyLev, replySeq, creDate, modiDate
-							from boardReply
-							where boardNum = #{boardNum}
-							order by replyRef desc, replySeq
-						  ) AS r
-					  where rownum &lt;= #{end}
-					  ) AS m
+		SELECT * FROM (
+		    SELECT 
+		        ROW_NUMBER() OVER (ORDER BY replyRef DESC, replySeq) AS rnum,
+		        r.*
+		    FROM (
+		        SELECT 
+		            replyNum, boardNum, replyWriter, replyPass,
+		            replyContent, replyRef, replyLev, replySeq, creDate, modiDate
+		        FROM boardreply
+		        WHERE boardNum = #{boardNum}
+		        ORDER BY replyRef DESC, replySeq
+		    ) AS r
+		) AS m
 		where rnum between #{start} and #{end}
 	</select>
 	
 	<select id="getReplyListCount" resultType="int" parameterType="int">
-		select count(*) from boardReply
+		select count(*) from boardreply
 		where boardNum = #{boardNum}
 	</select>
 	
 	<insert id="replyInsert" parameterType="BoardReply">
-		insert into boardReply
-		values(BOARDREPLY_SEQ.nextval, #{boardNum}, #{replyWriter}, #{replyPass}, #{replyContent},
-		BOARDREPLY_SEQ.nextval, #{replyLev}, #{replySeq}, SYSDATE, null)
+		insert into boardreply
+		values(#{replyNum}, #{boardNum}, #{replyWriter}, #{replyPass}, #{replyContent},
+		#{replyNum}, #{replyLev}, #{replySeq}, CURRENT_TIMESTAMP, null)
 	</insert>
 	
 	<update id="replyUpdate" parameterType="BoardReply">
-		update boardReply
-		set replyContent = #{replyContent}, modiDate = sysdate
+		update boardreply
+		set replyContent = #{replyContent}, modiDate = CURRENT_TIMESTAMP
 		where replyNum = #{replyNum}
 	</update>
 	
 	<delete id="replyDelete" parameterType="BoardReply">
-	<![CDATA[
-		delete boardReply
-		where replyRef = #{replyRef}
-		and replyLev >= #{replyLev}
-		and replySeq >= #{replySeq}
-		and replySeq <= (nvl((select min(replySeq)-1
-							  from boardReply
-							  where replyRef = #{replyRef}
-							  and replyLev = #{replyLev}
-							  and replySeq > #{replySeq}), (select max(replySeq)
-							  								from boardReply
-							  								where replyRef = #{replyRef})
-					    	 ) AS a
-						) AS b
-	]]>
+		delete from boardreply
+		where boardNum = #{boardNum}
+		and replyNum = #{replyNum}
 	</delete>
 	
 	<select id="getBoardReplyCount" resultType="int" parameterType="int">
 		select boardNum, count(replyNum) as reply_count
-		from boardReply
+		from boardreply
 		group by boardNum
 	</select>
 	
@@ -230,7 +222,7 @@
 	
 	<select id="checkWriter" parameterType="Map" resultType="BoardReply">
 		select replyWriter, replyPass
-		from boardReply
+		from boardreply
 		where replyWriter = #{replyWriter}
 		and replyPass = #{replyPass}
 		and replyNum = #{replyNum}
@@ -238,7 +230,7 @@
 	
 	<select id="checkPass" parameterType="Map" resultType="BoardReply">
 		select replyNum
-		from boardReply
+		from boardreply
 		where replyNum = #{replyNum}
 		and boardNum = #{boardNum}
 		and replyPass = #{deletePass}
@@ -246,8 +238,8 @@
 	
 	<insert id="boardInsert" parameterType="Board">
 		insert into board
-	    values (board_seq.nextval, #{id}, #{cateName}, #{boardTitle}, #{boardContent},
-	     sysdate, null, 0, #{boardKey}, 'Y', 0)
+	    values (#{boardNum}, #{id}, #{cateName}, #{boardTitle}, #{boardContent},
+	    CURRENT_TIMESTAMP, null, 0, #{boardKey}, 'Y', 0)
 	</insert>
 	
 	<select id="adminId" resultType="Admin">
@@ -256,36 +248,78 @@
 	</select>
 	
 	<update id="replySeqUpdate">
-		update boardReply
+		update boardreply
 		set replySeq = replySeq + 1
 		where replyRef = #{replyRef}
 	    and replySeq &gt; #{replySeq}
 	</update>
 	
 	<insert id="reReplyInsert" parameterType="BoardReply">
-		insert into boardReply
+		insert into boardreply
 		values(BOARDREPLY_SEQ.nextval, #{boardNum}, #{replyWriter}, #{replyPass}, #{replyContent},
-		#{replyRef}, #{replyLev}, #{replySeq}, SYSDATE, null)
+		#{replyRef}, #{replyLev}, #{replySeq}, CURRENT_TIMESTAMP, null)
 	</insert>
 	
-	<select id="getCountDown" parameterType="int" resultType="int">
+	<select id="getProjectCountDown" parameterType="int" resultType="int">
 		select coalesce(max(boardNum), 0)
 	    from board
 	    where boardNum &lt; #{boardNum}
 	    and boardKey = 'project'
 	</select>
 	
-	<select id="getCountUp" parameterType="int" resultType="int">
+	<select id="getProjectCountUp" parameterType="int" resultType="int">
 		select coalesce(min(boardNum), 0)
 	    from board
 	    where boardNum &gt; #{boardNum}
 	    and boardKey = 'project'
 	</select>
 	
+	<select id="getCsCountDown" parameterType="int" resultType="int">
+		select coalesce(max(boardNum), 0)
+	    from board
+	    where boardNum &lt; #{boardNum}
+	    and boardKey = 'cs'
+	</select>
+	
+	<select id="getCsCountUp" parameterType="int" resultType="int">
+		select coalesce(min(boardNum), 0)
+	    from board
+	    where boardNum &gt; #{boardNum}
+	    and boardKey = 'cs'
+	</select>
+	
+	<select id="getCodingCountDown" parameterType="int" resultType="int">
+		select coalesce(max(boardNum), 0)
+	    from board
+	    where boardNum &lt; #{boardNum}
+	    and boardKey = 'code'
+	</select>
+	
+	<select id="getCodingCountUp" parameterType="int" resultType="int">
+		select coalesce(min(boardNum), 0)
+	    from board
+	    where boardNum &gt; #{boardNum}
+	    and boardKey = 'code'
+	</select>
+	
+	<select id="getStudyCountDown" parameterType="int" resultType="int">
+		select coalesce(max(boardNum), 0)
+	    from board
+	    where boardNum &lt; #{boardNum}
+	    and boardKey = 'study'
+	</select>
+	
+	<select id="getStudyCountUp" parameterType="int" resultType="int">
+		select coalesce(min(boardNum), 0)
+	    from board
+	    where boardNum &gt; #{boardNum}
+	    and boardKey = 'study'
+	</select>
+	
 	<update id="updateBoard" parameterType="Board">
 		update board
 	    set	boardTitle = #{boardTitle}, boardContent = #{boardContent},
-	     cateName = #{cateName}, boardKey = #{boardKey}, modiDate = sysdate
+	     cateName = #{cateName}, boardKey = #{boardKey}, modiDate = CURRENT_TIMESTAMP
 	    where boardNum = #{boardNum}
 	</update>
 	
@@ -294,4 +328,12 @@
 		set boardState = 'N'
 		where boardNum = #{boardNum}
 	</update>
+	
+	<select id="boardNumCountNow" resultType="int">
+		select max(boardNum) from board
+	</select>
+	
+	<select id="replyCountNow" resultType="int">
+		select max(replyNum) from boardreply
+	</select>
 </mapper>

@@ -59,13 +59,29 @@ public interface mainMapper {
 
 	void replySeqUpdate(BoardReply boardReply);
 
-	int getCountDown(int num);
+	int getProjectCountDown(int num);
 
-	int getCountUp(int num);
+	int getProjectCountUp(int num);
+	
+	int getCsCountDown(int num);
+
+	int getCsCountUp(int num);
+	
+	int getCodingCountDown(int num);
+
+	int getCodingCountUp(int num);
+	
+	int getStudyCountDown(int num);
+
+	int getStudyCountUp(int num);
 
 	int updateBoard(Board board);
 
 	int deleteBoard(int boardNum);
+
+	int boardNumCountNow();
+
+	int replyCountNow();
 
 	
 

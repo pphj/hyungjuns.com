@@ -120,7 +120,8 @@ public class mainServiceImpl implements mainService {
 	}
 
 	@Override
-	public void replyInsertAndUpdateReplyCount(BoardReply boardReply) {
+	public void replyInsertAndUpdateReplyCount(BoardReply boardReply, int replyCountNow) {
+		boardReply.setReplyNum(replyCountNow + 1);
 		dao.updateReplyCount(boardReply.getBoardNum());
         dao.replyInsert(boardReply);
 	}
@@ -169,7 +170,8 @@ public class mainServiceImpl implements mainService {
 	}
 
 	@Override
-	public void boardinsert(Board board) {
+	public void boardinsert(Board board, int boardNumCountNow) {
+		board.setBoardNum(boardNumCountNow + 1);
 		dao.boardInsert(board);
 	}
 	
@@ -186,13 +188,43 @@ public class mainServiceImpl implements mainService {
 	}
 
 	@Override
-	public int getCountDown(int num) {
-		return dao.getCountDown(num);
+	public int getProjectCountDown(int num) {
+		return dao.getProjectCountDown(num);
 	}
 
 	@Override
-	public int getCountUp(int num) {
-		return dao.getCountUp(num);
+	public int getProjectCountUp(int num) {
+		return dao.getProjectCountUp(num);
+	}
+	
+	@Override
+	public int getCsCountDown(int num) {
+		return dao.getCsCountDown(num);
+	}
+
+	@Override
+	public int getCsCountUp(int num) {
+		return dao.getCsCountUp(num);
+	}
+	
+	@Override
+	public int getCodingCountDown(int num) {
+		return dao.getCodingCountDown(num);
+	}
+
+	@Override
+	public int getCodingCountUp(int num) {
+		return dao.getCodingCountUp(num);
+	}
+	
+	@Override
+	public int getStudyCountDown(int num) {
+		return dao.getStudyCountDown(num);
+	}
+
+	@Override
+	public int getStudyCountUp(int num) {
+		return dao.getStudyCountUp(num);
 	}
 
 	@Override
@@ -203,6 +235,16 @@ public class mainServiceImpl implements mainService {
 	@Override
 	public int deleteBoard(int boardNum) {
 		return dao.deleteBoard(boardNum);
+	}
+
+	@Override
+	public int boardNumCountNow() {
+		return dao.boardNumCountNow();
+	}
+
+	@Override
+	public int replyCountNow() {
+		return dao.replyCountNow();
 	}
 
 	

@@ -28,6 +28,15 @@
 body {
 	font-family: 'godic', sans-serif;
 }
+
+#navBar a {
+	text-align: center;
+}
+
+#navBar a span {
+	font-size: 16px;
+	color: green;
+}
 </style>
 </head>
 <body>
@@ -38,6 +47,7 @@ body {
                     <nav class="navbar navbar-light navbar-expand-xl" id="navBar">
                         <a href="${pageContext.request.contextPath}/page/main" class="navbar-brand">
                             <h4 class="text-primary display-6 fw-bold mb-0">형준&nbsp;닷컴</h4>
+                            <span>HYUNGJUNS.COM</span>
                         </a>
                         <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                             <span class="fa fa-bars text-primary"></span>

@@ -31,7 +31,7 @@ public interface mainService {
 
 	int getReplyListCount(int boardNum);
 
-	void replyInsertAndUpdateReplyCount(BoardReply boardReply);
+	void replyInsertAndUpdateReplyCount(BoardReply boardReply, int replyCountNow);
 
 	int replyUpdate(BoardReply boardReply);
 	
@@ -41,17 +41,35 @@ public interface mainService {
 
 	boolean checkPass(int replyNum, int boardNum, String deletePass);
 
-	void boardinsert(Board board);
+	void boardinsert(Board board, int boardNumCountNow);
 
 	void reReplyInsertAndUpdateReplyCount(BoardReply boardReply);
 
-	int getCountDown(int num);
+	int getProjectCountDown(int num);
 
-	int getCountUp(int num);
+	int getProjectCountUp(int num);
+	
+	int getCsCountDown(int num);
+
+	int getCsCountUp(int num);
+	
+	int getCodingCountDown(int num);
+
+	int getCodingCountUp(int num);
+	
+	int getStudyCountDown(int num);
+
+	int getStudyCountUp(int num);
 	
 	int updateBoard(Board board);
 	
 	int deleteBoard(int boardNum);
+
+	int boardNumCountNow();
+
+	int replyCountNow();
+
+	
 
 
 	

@@ -107,8 +107,8 @@ public class mainController {
 			mv.addObject("url", request.getRequestURI());
 		}else {
 			logger.info("project 상세보기 성공");
-			int countDown = mainService.getCountDown(num);
-			int countUp = mainService.getCountUp(num);
+			int countDown = mainService.getProjectCountDown(num);
+			int countUp = mainService.getProjectCountUp(num);
 			int count = mainService.getReplyListCount(num);
 			
 			mv.addObject("count", count);
@@ -156,8 +156,8 @@ public class mainController {
 			mv.addObject("url", request.getRequestURI());
 		}else {
 			logger.info("cs 상세보기 성공");
-			int countDown = mainService.getCountDown(num);
-			int countUp = mainService.getCountUp(num);
+			int countDown = mainService.getCsCountDown(num);
+			int countUp = mainService.getCsCountUp(num);
 			int count = mainService.getReplyListCount(num);
 			
 			mv.addObject("count", count);
@@ -199,11 +199,19 @@ public class mainController {
 		}
 		
 		Board codingData = mainService.getBoardDetail(num);
+		
 		if (codingData == null) {
 			logger.info("coding 상세보기 실패");
 			mv.addObject("url", request.getRequestURI());
 		}else {
 			logger.info("coding 상세보기 성공");
+			int countDown = mainService.getCodingCountDown(num);
+			int countUp = mainService.getCodingCountUp(num);
+			int count = mainService.getReplyListCount(num);
+			
+			mv.addObject("count", count);
+			mv.addObject("countDown", countDown);
+			mv.addObject("countUp", countUp);
 			mv.addObject("codingData", codingData);
 			mv.setViewName("detailView/codingView");
 		}
@@ -245,6 +253,13 @@ public class mainController {
 			mv.addObject("url", request.getRequestURI());
 		}else {
 			logger.info("study 상세보기 성공");
+			int countDown = mainService.getStudyCountDown(num);
+			int countUp = mainService.getStudyCountUp(num);
+			int count = mainService.getReplyListCount(num);
+			
+			mv.addObject("count", count);
+			mv.addObject("countDown", countDown);
+			mv.addObject("countUp", countUp);
 			mv.addObject("studyData", studyData);
 			mv.setViewName("detailView/studyView");
 		}
@@ -267,7 +282,9 @@ public class mainController {
 	@RequestMapping(value="/replyInsert")
 	public int replyInsertAndUpdateReplyCount(BoardReply BoardReply) {			//댓글 등록
 		try {
-	        mainService.replyInsertAndUpdateReplyCount(BoardReply);
+			int replyCountNow = mainService.replyCountNow();
+			
+	        mainService.replyInsertAndUpdateReplyCount(BoardReply, replyCountNow);
 	        return 1; 				//성공
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -299,6 +316,7 @@ public class mainController {
 	        mainService.replyDeleteAndUpdateReplyCount(BoardReply);
 	        return 1;
 	    }else {
+	    	logger.info("비밀번호 오류");
 	    	return 0;
 	    }
 		
@@ -325,7 +343,9 @@ public class mainController {
 	
 	@PostMapping(value="/boardInsert")
 	public String boardInsert(Board board, HttpServletRequest request) throws Exception {		//게시글 등록
-		mainService.boardinsert(board);
+		int boardNumCountNow = mainService.boardNumCountNow();
+		
+		mainService.boardinsert(board, boardNumCountNow);
 		
 		logger.info(board.toString());
 		
