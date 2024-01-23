@@ -56,12 +56,16 @@
 	</update>
 	
 	<select id="getCsList" parameterType="java.util.Map" resultType="Board">
-		SELECT *
-		FROM (
-		    SELECT *, ROW_NUMBER() OVER (ORDER BY creDate DESC, modiDate ASC) AS rnum
-		    FROM board
-		    WHERE boardKey = 'cs' AND boardState = 'Y'
-		) AS b
+		select * 
+		from (
+				 SELECT ROW_NUMBER() OVER (ORDER BY creDate DESC, modiDate ASC) AS rnum, b.*
+		    FROM (
+		        SELECT *
+		        FROM board
+		        WHERE boardKey = 'cs'
+		        AND boardState = 'Y'
+		    ) AS b
+		) AS m
 		where rnum &gt;= #{start} and rnum &lt;= #{end}
 	</select>
 	
@@ -92,7 +96,7 @@
 		    FROM (
 		        SELECT *
 		        FROM board
-		        WHERE boardKey = 'coding'
+		        WHERE boardKey = 'code'
 		        AND boardState = 'Y'
 		    ) AS b
 		) AS m
