@@ -1,7 +1,8 @@
 pipeline {
     environment { 
-        repository = "parkhj0209/security"    //docker hub id와 repository 이름
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')   // jenkins에 등록해 놓은 docker hub credentials 이름        
+        repository = "parkhj0209/security"  //docker hub id와 repository 이름
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름      
+        TARGET_HOST = "ubuntu@43.203.174.44"
     }
     agent any
 
@@ -14,7 +15,7 @@ pipeline {
         stage('Git Pull') {
             steps {
                  // Get some code from a GitHub repository
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/pphj/hyungjuns.com'
+                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/pphj/hyungjuns.com'
 
             }
             post {
@@ -28,11 +29,11 @@ pipeline {
             }    
         }
 
-         //clone 받은 프로젝트 안의 디렉토리에서 stage 실행
+         //clone 받은 프로젝트 안의 Spring10_Security_War 디렉토리에서 stage 실행
         stage('Build') {
             steps {    
-                dir("HJ"){   ///var/jenkins_home/workspace/test_item/디렉토리
-                    sh "mvn -DskipTests  clean package"
+                dir("HJ"){   ///var/jenkins_home/workspace/test_item/Spring10_Security_War
+                    sh "mvn -DskipTests clean package"
                     }  
             }
             post {
@@ -48,12 +49,12 @@ pipeline {
 
         }
 
-
         stage('Dockerizing'){
             steps{
-                dir("HJ"){   ///var/jenkins_home/workspace/test_item/디렉토리/Dockerfile 위치
+                dir("HJ"){   ///var/jenkins_home/workspace/test_item/Spring10_Security_War/Dockerfile 위치
                     sh 'echo " Image Bulid Start"'
-                    sh 'docker build . -t $repository:$BUILD_NUMBER'				//위 environment에서 설정한 repository에 이미지 생성  BUILD_NUMBER는 pipeline의 #숫자 
+                    sh 'docker build . -t $repository:$BUILD_NUMBER'
+                    sh 'docker build . -t $repository'
                 }
             }
                 post {
@@ -71,7 +72,7 @@ pipeline {
         stage('Login'){
             steps{
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' // docker hub 로그인
-                //DOCKERHUB_CREDENTIALS_PSW : environment에서 설정해놓음,  --password-stdin : DOCKERHUB_CREDENTIALS_PSW를 사용
+                
             }
             
             post {
@@ -90,6 +91,7 @@ pipeline {
             steps{
                 sh 'echo " docker hub push"'
                 sh 'docker push  $repository:$BUILD_NUMBER'
+                sh 'docker push  $repository'
             }
             post {
                 success {
@@ -106,7 +108,8 @@ pipeline {
      stage('Cleaning up'){
             steps{
                 sh 'echo " docker image rmi"'
-                sh "docker rmi $repository:$BUILD_NUMBER" 	// docker image 제거
+                sh "docker rmi $repository:$BUILD_NUMBER" // docker image 제거
+                sh "docker rmi $repository"              // docker image 제거
             }
             post {
                 success {
@@ -118,7 +121,21 @@ pipeline {
                     exit 1
                 }
             }
-        }    
-               
+        }      
+        
+            
+       
+       stage('multiline ssh') {
+            steps {        
+                sshagent (credentials: ['hyungs.com-ec2']) {
+                sh """
+                    ssh -o StrictHostKeyChecking=no ${TARGET_HOST} '
+                    sudo docker-compose up -d
+                    '
+                """
+                }
+           }
+     }
+       
     }
 }
