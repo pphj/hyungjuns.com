@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.home.mybatis.mapper.mainMapper">
+	<select id="getProjectList" parameterType="java.util.Map" resultType="Board">
+		select * 
+		from (
+				 SELECT ROW_NUMBER() OVER (ORDER BY creDate DESC, modiDate ASC) AS rnum, b.*
+		    FROM (
+		        SELECT *
+		        FROM board
+		        WHERE boardKey = 'project'
+		        AND boardState = 'Y'
+		    ) AS b
+		) AS m
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	
+	
+	<sql id="search">
+		<if test="search_field != null">
+			and
+			<choose>
+				<when test="search_field == '제목'">boardTitle</when>
+				<when test="search_field == '날짜'">creDate</when>
+			</choose>
+			like #{search_word}
+		</if>
+	</sql>
+	
+	<!-- <select id="getProjectList2" parameterType="map" resultType="Board">
+		select * 
+		from (select rownum rnum, b.*
+			  from (select *
+			  		from board
+			  		where key = 'project'
+			  		and boardState = 'Y'
+			  		<include refid="search" />
+					order by creDate desc, modidate asc
+			  ) b
+			  where rownum &lt;= #{end}
+		)
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	 -->
+	 
+	<select id="getProjectListCount" resultType="int">
+		select count(*) from board where boardKey = 'project' and boardState = 'Y'
+	</select>
+	
+	<update id="setBoardViewUpdate" parameterType="int">
+		update board
+		set boardView = boardView + 1
+		where boardNum = #{boardNum}
+	</update>
+	
+	<select id="getCsList" parameterType="java.util.Map" resultType="Board">
+		select * 
+		from (
+				 SELECT ROW_NUMBER() OVER (ORDER BY creDate DESC, modiDate ASC) AS rnum, b.*
+		    FROM (
+		        SELECT *
+		        FROM board
+		        WHERE boardKey = 'cs'
+		        AND boardState = 'Y'
+		    ) AS b
+		) AS m
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	
+	<!-- <select id="getCsList2" parameterType="map" resultType="Board">
+		select * 
+		from (select rownum rnum, b.*
+			  from (select *
+			  		from board
+			  		where key = 'cs'
+			  		and boardState = 'Y'
+			  		<include refid="search" />
+					order by creDate desc
+			  ) b
+			  where rownum &lt;= #{end}
+		)
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	-->
+	
+	<select id="getCsListCount" resultType="int">
+		select count(*) from board where boardKey = 'cs' and boardState = 'Y'
+	</select>
+	
+	<select id="getCodingList" parameterType="java.util.Map" resultType="Board">
+		select * 
+		from (
+				 SELECT ROW_NUMBER() OVER (ORDER BY creDate DESC, modiDate ASC) AS rnum, b.*
+		    FROM (
+		        SELECT *
+		        FROM board
+		        WHERE boardKey = 'coding'
+		        AND boardState = 'Y'
+		    ) AS b
+		) AS m
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	
+	<!-- <select id="getCodingList2" parameterType="map" resultType="Board">
+		select * 
+		from (select rownum rnum, b.*
+			  from (select *
+			  		from board
+			  		where key = 'code'
+			  		and boardState = 'Y'
+			  		<include refid="search" />
+					order by creDate desc
+			  ) b
+			  where rownum &lt;= #{end}
+		)
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	-->
+	
+	<select id="getCodingListCount" resultType="int">
+		select count(*) from board where boardKey = 'code' and boardState = 'Y'
+	</select>
+	
+	<select id="getStudyList" parameterType="java.util.Map" resultType="Board">
+		select * 
+		from (
+				 SELECT ROW_NUMBER() OVER (ORDER BY creDate DESC, modiDate ASC) AS rnum, b.*
+		    FROM (
+		        SELECT *
+		        FROM board
+		        WHERE boardKey = 'study'
+		        AND boardState = 'Y'
+		    ) AS b
+		) AS m
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	
+	<!--<select id="getStudyList2" parameterType="map" resultType="Board">
+		select * 
+		from (select rownum rnum, b.*
+			  from (select *
+			  		from board
+			  		where key = 'study'
+			  		and boardState = 'Y'
+			  		<include refid="search" />
+					order by creDate desc
+			  ) b
+			  where rownum &lt;= #{end}
+		)
+		where rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
+	-->
+	
+	<select id="getStudyListCount" resultType="int">
+		select count(*) from board where boardKey = 'study' and boardState = 'Y'
+	</select>
+	
+	<select id="getBoardDetail" parameterType="int" resultType="Board">
+		select * from board
+		where boardNum = #{boardNum}
+	</select>
+	
+	<select id="getReplyList" parameterType="map" resultType="BoardReply">
+		select * from(select rownum rnum, r.*
+					  from( select replyNum, boardNum, replyWriter, replyPass,
+					  	    replyContent, replyRef, replyLev, replySeq, creDate, modiDate
+							from boardReply
+							where boardNum = #{boardNum}
+							order by replyRef desc, replySeq
+						  ) AS r
+					  where rownum &lt;= #{end}
+					  ) AS m
+		where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="getReplyListCount" resultType="int" parameterType="int">
+		select count(*) from boardReply
+		where boardNum = #{boardNum}
+	</select>
+	
+	<insert id="replyInsert" parameterType="BoardReply">
+		insert into boardReply
+		values(BOARDREPLY_SEQ.nextval, #{boardNum}, #{replyWriter}, #{replyPass}, #{replyContent},
+		BOARDREPLY_SEQ.nextval, #{replyLev}, #{replySeq}, SYSDATE, null)
+	</insert>
+	
+	<update id="replyUpdate" parameterType="BoardReply">
+		update boardReply
+		set replyContent = #{replyContent}, modiDate = sysdate
+		where replyNum = #{replyNum}
+	</update>
+	
+	<delete id="replyDelete" parameterType="BoardReply">
+	<![CDATA[
+		delete boardReply
+		where replyRef = #{replyRef}
+		and replyLev >= #{replyLev}
+		and replySeq >= #{replySeq}
+		and replySeq <= (nvl((select min(replySeq)-1
+							  from boardReply
+							  where replyRef = #{replyRef}
+							  and replyLev = #{replyLev}
+							  and replySeq > #{replySeq}), (select max(replySeq)
+							  								from boardReply
+							  								where replyRef = #{replyRef})
+					    	 ) AS a
+						) AS b
+	]]>
+	</delete>
+	
+	<select id="getBoardReplyCount" resultType="int" parameterType="int">
+		select boardNum, count(replyNum) as reply_count
+		from boardReply
+		group by boardNum
+	</select>
+	
+	<update id="updateReplyCount" parameterType="Board">
+		update board
+		set replyCount = replyCount + 1
+		where boardNum = #{boardNum}
+	</update>
+	
+	<update id="minusReplyCount" parameterType="Board">
+		update board
+		set replyCount = replyCount - 1
+		where boardNum = #{boardNum}
+	</update>
+	
+	<select id="checkWriter" parameterType="Map" resultType="BoardReply">
+		select replyWriter, replyPass
+		from boardReply
+		where replyWriter = #{replyWriter}
+		and replyPass = #{replyPass}
+		and replyNum = #{replyNum}
+	</select>
+	
+	<select id="checkPass" parameterType="Map" resultType="BoardReply">
+		select replyNum
+		from boardReply
+		where replyNum = #{replyNum}
+		and boardNum = #{boardNum}
+		and replyPass = #{deletePass}
+	</select>
+	
+	<insert id="boardInsert" parameterType="Board">
+		insert into board
+	    values (board_seq.nextval, #{id}, #{cateName}, #{boardTitle}, #{boardContent},
+	     sysdate, null, 0, #{boardKey}, 'Y', 0)
+	</insert>
+	
+	<select id="adminId" resultType="Admin">
+		select * from admin
+		where id = #{id}
+	</select>
+	
+	<update id="replySeqUpdate">
+		update boardReply
+		set replySeq = replySeq + 1
+		where replyRef = #{replyRef}
+	    and replySeq &gt; #{replySeq}
+	</update>
+	
+	<insert id="reReplyInsert" parameterType="BoardReply">
+		insert into boardReply
+		values(BOARDREPLY_SEQ.nextval, #{boardNum}, #{replyWriter}, #{replyPass}, #{replyContent},
+		#{replyRef}, #{replyLev}, #{replySeq}, SYSDATE, null)
+	</insert>
+	
+	<select id="getCountDown" parameterType="int" resultType="int">
+		select coalesce(max(boardNum), 0)
+	    from board
+	    where boardNum &lt; #{boardNum}
+	    and boardKey = 'project'
+	</select>
+	
+	<select id="getCountUp" parameterType="int" resultType="int">
+		select coalesce(min(boardNum), 0)
+	    from board
+	    where boardNum &gt; #{boardNum}
+	    and boardKey = 'project'
+	</select>
+	
+	<update id="updateBoard" parameterType="Board">
+		update board
+	    set	boardTitle = #{boardTitle}, boardContent = #{boardContent},
+	     cateName = #{cateName}, boardKey = #{boardKey}, modiDate = sysdate
+	    where boardNum = #{boardNum}
+	</update>
+	
+	<update id="deleteBoard" parameterType="int">
+		update board
+		set boardState = 'N'
+		where boardNum = #{boardNum}
+	</update>
+</mapper>
