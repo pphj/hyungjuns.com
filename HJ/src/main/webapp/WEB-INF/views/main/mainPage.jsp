@@ -202,7 +202,7 @@
                                 <p class="m-0 fs-5">
                                 	<strong>Back-End : Java 11 <i class="fa-brands fa-java"></i> , Spring Boot , myBatis</strong><br>
 								    <strong>Front-End :  javaScript <i class="fa-brands fa-js"></i>, jQuery, Bootstrap <i class="fa-brands fa-bootstrap"></i></strong><br>
-								    <strong>DataBase : Oracle</strong><br>
+								    <strong>DataBase : Oracle, Mysql</strong><br>
 								    <strong>etc : AWS <i class="fa-brands fa-aws"></i>, Jenkins <i class="fa-brands fa-jenkins"></i>, github <i class="fa-brands fa-github"></i></strong><br>
                                 </p>
                             </div>
