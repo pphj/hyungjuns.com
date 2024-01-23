@@ -3,14 +3,14 @@ package com.hj.home;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-//½ºÇÁ¸µ ºÎÆ® »ı¼º ½Ã, war ÆÄÀÏÀ» ¼±ÅÃÇßÀ» ¶§¸¸ »ı¼ºµÈ´Ù.
+//ìŠ¤í”„ë§ ë¶€íŠ¸ ìƒì„± ì‹œ, war íŒŒì¼ì„ ì„ íƒí–ˆì„ ë•Œë§Œ ìƒì„±ëœë‹¤.
 public class ServletInitializer extends SpringBootServletInitializer {
 	
-	//WAR ÆÄÀÏÀ» »ı¼ºÇÏ°í ¿ÜºÎ ¼­ºí¸´ ÄÁÅ×ÀÌ³Ê¿¡ ¹èÆ÷ÇÏ¿© ½ºÇÁ¸µºÎÆ® ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀ» ½ÇÇàÇÏ´Â ¿ªÇÒÀ» ÇÏ´Â Å¬·¡½º
+	//WAR íŒŒì¼ì„ ìƒì„±í•˜ê³  ì™¸ë¶€ ì„œë¸”ë¦¿ ì»¨í…Œì´ë„ˆì— ë°°í¬í•˜ì—¬ ìŠ¤í”„ë§ë¶€íŠ¸ ì• í”Œë¦¬ì¼€ì´ì…˜ì„ ì‹¤í–‰í•˜ëŠ” ì—­í• ì„ í•˜ëŠ” í´ë˜ìŠ¤
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		//configure : SpringApplicationBuilder¸¦ ÀÌ¿ëÇÏ¸ç, application.sources() ¸Ş¼­µå¸¦ »ç¿ëÇØ
-		//¿ÜºÎ ¼­ºí¸´ ÄÁÅ×ÀÌ³Ê¿¡¼­ ½ÇÇàÇÒ ½ºÇÁ¸µ ºÎÆ® ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀ» ¼³Á¤ÇØÁØ´Ù.
+		//configure : SpringApplicationBuilderë¥¼ ì´ìš©í•˜ë©°, application.sources() ë©”ì„œë“œë¥¼ ì‚¬ìš©í•´
+		//ì™¸ë¶€ ì„œë¸”ë¦¿ ì»¨í…Œì´ë„ˆì—ì„œ ì‹¤í–‰í•  ìŠ¤í”„ë§ ë¶€íŠ¸ ì• í”Œë¦¬ì¼€ì´ì…˜ì„ ì„¤ì •í•´ì¤€ë‹¤.
 		return application.sources(HjApplication.class);
 	}
 

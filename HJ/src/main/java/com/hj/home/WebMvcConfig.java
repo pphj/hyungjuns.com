@@ -5,19 +5,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//½ºÇÁ¸µ ºÎÆ®ÀÇ À¥ MVC ¸¦ ±¸»óÇÏ´Â ¿ªÇÒÀ» ÇÏ´Â WebMvcConfig Å¬·¡½º
-//ºä ÄÁÆ®·Ñ·¯ µî·Ï ¹× Á¤Àû ¸®¼Ò½ºµéÀÇ ÇÚµé·¯ µî·ÏÀ» ÇØ Å½»öÇÏ´Â ¿ªÇÒÀ» ÇÑ´Ù
+//ìŠ¤í”„ë§ ë¶€íŠ¸ì˜ ì›¹ MVC ë¥¼ êµ¬ìƒí•˜ëŠ” ì—­í• ì„ í•˜ëŠ” WebMvcConfig í´ë˜ìŠ¤
+//ë·° ì»¨íŠ¸ë¡¤ëŸ¬ ë“±ë¡ ë° ì •ì  ë¦¬ì†ŒìŠ¤ë“¤ì˜ í•¸ë“¤ëŸ¬ ë“±ë¡ì„ í•´ íƒìƒ‰í•˜ëŠ” ì—­í• ì„ í•œë‹¤
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer{
-
-//	@Value("${my.savepath}")
-//	private String saveFolder;
-	
-//	@Value("${app.image-upload-dir.savepath}")
-//	private String saveFolder2;
-//	
-//	@Value("${app.image-upload-dir2.savepath}")
-//	private String saveFolder3;
 	
 	private static final String[] CLASSPATH_RESOURCE_LOCATIONS
 	= {
@@ -27,23 +18,16 @@ public class WebMvcConfig implements WebMvcConfigurer{
 	
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		//url mapping "/"·Î Á¢¼ÓÇÏ¸é "/main/main"·Î ÀÌµ¿
+		//url mapping "/"ë¡œ ì ‘ì†í•˜ë©´ "/page/main"ìœ¼ë¡œ ì´ë™
 		registry.addViewController("/").setViewName("forward:page/main");
 	}
 	
-	//Á¤Àû ¸®¼Ò½º ÇÚµé·¯ µî·ÏÀ» ÇÏ°í, ±× ¸®¼Ò½ºµéÀÇ À§Ä¡¸¦ ´ãÀº »ó¼ö °ªÀ» ¸Å°³º¯¼ö·Î °¡Áö´Â
-		//¸Ş¼­µå¸¦ ¿À¹ö¶óÀÌµùÇØ Å½»öÇÏ´Â ¿ªÇÒÀ» ÇÑ´Ù.
+	//ì •ì  ë¦¬ì†ŒìŠ¤ í•¸ë“¤ëŸ¬ ë“±ë¡ì„ í•˜ê³ , ê·¸ ë¦¬ì†ŒìŠ¤ë“¤ì˜ ìœ„ì¹˜ë¥¼ ë‹´ì€ ìƒìˆ˜ ê°’ì„ ë§¤ê°œë³€ìˆ˜ë¡œ ê°€ì§€ëŠ” ë©”ì†Œë“œë¥¼ ì˜¤ë²„ë¼ì´ë”©í•´ íƒìƒ‰
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	//   /static/ ¶Ç´Â /templates/ °æ·ÎÀÇ resources¿¡ Á¤Àû ¸®¼Ò½ºµéÀÌ ÀÖ´Ù°í ¼³Á¤µÇ¾îÀÖ´Ù.
+	//   /static/ ë˜ëŠ” /templates/ ê²½ë¡œì˜ resourcesì— ì •ì  ë¦¬ì†ŒìŠ¤ë“¤ì´ ìˆë‹¤ê³  ì„¤ì •ë˜ì–´ìˆë‹¤.
 		registry.addResourceHandler("/resources/**")
 		.addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
-//		registry.addResourceHandler("/upload/**")
-//				.addResourceLocations(saveFolder);
-//		registry.addResourceHandler("/image/MemberUpload/**")
-//				.addResourceLocations(saveFolder2);
-//		registry.addResourceHandler("/image/Member/**")
-//		.addResourceLocations(saveFolder3);
 
 	}
 	

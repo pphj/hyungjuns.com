@@ -20,7 +20,7 @@ public class mainServiceImpl implements mainService {
 		this.dao = dao;
 	}
 	
-	//¸®½ºÆ® °øÅë »ç¿ë ¸Ş¼Òµå
+	//ë¦¬ìŠ¤íŠ¸ ê³µí†µ ì‚¬ìš© ë©”ì†Œë“œ
 	public HashMap<String, Integer> listLogic (int page, int limit) {
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		int startrow = (page - 1) * limit + 1;
@@ -31,7 +31,7 @@ public class mainServiceImpl implements mainService {
 		return map;
 	}
 	
-	//°Ë»ö ¸®½ºÆ® °øÅë ¸Ş¼Òµå
+	//ê²€ìƒ‰ ë¦¬ìŠ¤íŠ¸ ê³µí†µ ë©”ì†Œë“œ
 	public Map<String, Object> listLogic_Search(int index, String search_word, int page, int limit, String[] searchField) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (index != -1) {
@@ -188,7 +188,7 @@ public class mainServiceImpl implements mainService {
 	}
 
 	@Override
-	public int getProjectCountDown(int num) {
+	public int getProjectCountDown(int num) {		//ê° ê²Œì‹œíŒì˜ ìµœëŒ€,ìµœì†Œ ê¸€ ë²ˆí˜¸
 		return dao.getProjectCountDown(num);
 	}
 
